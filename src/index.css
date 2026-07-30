@@ -1,0 +1,85 @@
+@media print {
+  .no-print { display: none !important; }
+  body { background: white; }
+  .print-page { padding: 0 !important; }
+}
+
+:root {
+  --forest: #2F4A3D;
+  --forest-hover: #263d32;
+  --saddle: #8A5A34;
+  --cream: #fbf9f5;
+  --tan: #e7e2d6;
+  --border: #d8d2c4;
+  --text: #22302a;
+  --muted: #6b7a70;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Mulish', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text);
+  background: var(--cream);
+  line-height: 1.55;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Fraunces', Georgia, serif;
+  color: var(--forest);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Shared button style */
+.btn {
+  font-family: 'Mulish', sans-serif;
+  font-size: 15px;
+  padding: 10px 18px;
+  background: var(--forest);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn:hover { background: var(--forest-hover); }
+.btn:disabled { opacity: 0.55; cursor: default; }
+.btn-secondary {
+  background: transparent;
+  color: var(--forest);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--tan); }
+
+/* Form fields */
+input, select, textarea {
+  font-family: 'Mulish', sans-serif;
+  font-size: 15px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+  margin-bottom: 12px;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--forest);
+  box-shadow: 0 0 0 2px rgba(47,74,61,0.12);
+}
+
+/* Reusable card + layout */
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
