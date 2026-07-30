@@ -13,6 +13,8 @@
   --border: #d8d2c4;
   --text: #22302a;
   --muted: #6b7a70;
+  --muted-light: #999;
+  --error: #bb0000;
 }
 
 * { box-sizing: border-box; }
@@ -83,3 +85,340 @@ input:focus, select:focus, textarea:focus {
   margin: 0 auto;
   padding: 32px 24px;
 }
+.form-narrow {
+  max-width: 420px;
+  margin: 0 auto 32px;
+}
+.form-narrow > h3 { text-align: center; }
+
+/* Text helpers */
+.text-muted { color: var(--muted); }
+.text-saddle { color: var(--saddle); }
+.form-message { margin-top: 10px; }
+.form-error { margin-top: 12px; color: var(--error); }
+
+/* Buttons */
+.btn-block { width: 100%; }
+.btn-link {
+  background: none;
+  border: none;
+  color: var(--forest);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font-family: 'Mulish', sans-serif;
+  font-size: 15px;
+}
+
+/* Page-level layout */
+.page-loading { padding: 40px; }
+.auth-page {
+  max-width: 340px;
+  margin: 80px auto;
+}
+
+/* Login screen */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 8px 30px rgba(47, 74, 61, 0.15);
+}
+.login-card h2 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 24px;
+  font-size: 30px;
+}
+.login-card input {
+  font-size: 16px;
+  padding: 14px;
+}
+.login-card .btn {
+  font-size: 16px;
+  padding: 14px 20px;
+}
+
+/* Horse gallery (admin/staff grid section) */
+.horse-gallery {
+  max-width: 720px;
+  margin: 0 auto 32px;
+}
+.horse-gallery > h3 { text-align: center; }
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.app-header h2 { margin: 0; }
+.divider {
+  margin: 32px 0;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+/* Form fields */
+.field-label {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 2px;
+  color: var(--forest);
+}
+.search-input {
+  max-width: 420px;
+  margin-bottom: 16px;
+}
+
+/* Horse grid */
+.horse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+}
+.horse-tile {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--cream);
+}
+.horse-tile-photo {
+  height: 120px;
+  background: var(--tan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.horse-tile-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.horse-tile-placeholder { font-size: 40px; }
+.horse-tile-info { padding: 10px; }
+.horse-tile-name { color: var(--forest); }
+.horse-tile-owner {
+  font-size: 13px;
+  color: var(--saddle);
+}
+.horse-tile-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+.horse-tile-link {
+  font-size: 12px;
+  color: var(--forest);
+  display: block;
+  margin-top: 6px;
+}
+
+/* Boarder horse card */
+.horse-card { max-width: 480px; margin-left: auto; margin-right: auto; }
+.horse-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.horse-card-facts {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.horse-card-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* Admin/staff horse detail view (mirrors .horse-card) */
+.horse-detail { max-width: 480px; margin-left: auto; margin-right: auto; }
+.horse-detail-actions {
+  display: flex;
+  gap: 12px;
+}
+.horse-detail-owner {
+  font-weight: 400;
+  color: var(--saddle);
+}
+
+/* Chat / messaging (boarder + staff) */
+.chat-panel { max-width: 480px; margin-left: auto; margin-right: auto; }
+.chat-panel > h3 { text-align: center; }
+.chat-messages {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  height: 320px;
+  overflow-y: auto;
+  background: var(--cream);
+  margin-bottom: 12px;
+}
+.chat-row {
+  text-align: left;
+  margin-bottom: 8px;
+}
+.chat-row--mine { text-align: right; }
+.chat-bubble {
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--tan);
+  color: var(--text);
+  max-width: 80%;
+}
+.chat-bubble--mine {
+  background: var(--forest);
+  color: #fff;
+}
+.chat-meta {
+  font-size: 11px;
+  color: var(--muted-light);
+}
+.chat-form {
+  display: flex;
+  gap: 8px;
+}
+.chat-input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Staff inbox */
+.inbox-panel {
+  display: flex;
+  gap: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 400px;
+}
+.inbox-list {
+  width: 200px;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  background: var(--cream);
+}
+.inbox-empty {
+  padding: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.inbox-thread-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border: none;
+  border-bottom: 1px solid var(--tan);
+  cursor: pointer;
+  background: transparent;
+  font-family: 'Mulish', sans-serif;
+  font-size: 15px;
+  color: var(--text);
+}
+.inbox-thread-btn--active { background: var(--tan); }
+.inbox-conversation {
+  flex: 1;
+  padding: 12px;
+}
+.conversation {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.conversation-messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 8px;
+}
+
+/* Shared read-only field display */
+.display-field { margin-bottom: 12px; }
+.display-field-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--saddle);
+  margin-bottom: 2px;
+}
+.display-field-value {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* Horse print sheet */
+.print-sheet {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px;
+}
+.print-controls {
+  margin-bottom: 24px;
+  display: flex;
+  gap: 12px;
+}
+.print-header {
+  border-bottom: 3px solid var(--forest);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+.print-header h1 { margin: 0; }
+.print-title-owner {
+  font-weight: 400;
+  color: var(--saddle);
+}
+.print-top-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+.print-photo {
+  width: 180px;
+  height: 180px;
+  background: var(--tan);
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.print-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.print-photo-placeholder { font-size: 60px; }
+.print-fields { flex: 1; }
+.print-section-heading {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+.print-section-heading--spaced { margin-top: 20px; }
+.print-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.print-notes { margin-top: 16px; }
+.print-field { margin-bottom: 10px; }
+.print-field-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--saddle);
+}
+.print-field-value { font-size: 15px; }

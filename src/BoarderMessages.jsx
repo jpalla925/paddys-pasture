@@ -44,35 +44,31 @@ export default function BoarderMessages({ userId }) {
   }
 
   return (
-    <div style={{ maxWidth: 480 }}>
-      <h3 style={{ color: '#2F4A3D' }}>Message the barn</h3>
+    <div className="chat-panel">
+      <h3>Message the barn</h3>
 
-      <div style={{ border: '1px solid #d8d2c4', borderRadius: 8, padding: 12, height: 320,
-        overflowY: 'auto', background: '#fbf9f5', marginBottom: 12 }}>
+      <div className="chat-messages">
         {messages.length === 0
-          ? <p style={{ color: '#777' }}>No messages yet. Send one below.</p>
+          ? <p className="text-muted">No messages yet. Send one below.</p>
           : messages.map((m) => {
               const mine = m.sender_id === userId
               return (
-                <div key={m.id} style={{ textAlign: mine ? 'right' : 'left', marginBottom: 8 }}>
-                  <span style={{ display: 'inline-block', padding: '8px 12px', borderRadius: 12,
-                    background: mine ? '#2F4A3D' : '#e7e2d6', color: mine ? 'white' : '#22302a',
-                    maxWidth: '80%' }}>
+                <div key={m.id} className={`chat-row ${mine ? 'chat-row--mine' : ''}`}>
+                  <span className={`chat-bubble ${mine ? 'chat-bubble--mine' : ''}`}>
                     {m.body}
                   </span>
-                  <div style={{ fontSize: 11, color: '#999' }}>{mine ? 'You' : 'Barn staff'}</div>
+                  <div className="chat-meta">{mine ? 'You' : 'Barn staff'}</div>
                 </div>
               )
             })}
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={send} style={{ display: 'flex', gap: 8 }}>
+      <form onSubmit={send} className="chat-form">
         <input value={body} onChange={(e) => setBody(e.target.value)}
           placeholder="Type a message about your horse..."
-          style={{ flex: 1, padding: 10 }} />
-        <button type="submit" disabled={sending}
-          style={{ padding: '10px 16px', background: '#2F4A3D', color: 'white', border: 'none', borderRadius: 4 }}>
+          className="chat-input" />
+        <button type="submit" className="btn" disabled={sending}>
           {sending ? '...' : 'Send'}
         </button>
       </form>

@@ -16,27 +16,27 @@ function MainApp({ session, profile, refreshKey, setRefreshKey }) {
   const isStaff = profile?.role === 'staff'
 
   return (
-    <div style={{ padding: 40, fontFamily: 'sans-serif', maxWidth: 900, margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+    <div className="container">
+      <div className="app-header">
         <div>
-          <h2 style={{ color: '#2F4A3D', margin: 0 }}>Paddy's Pasture</h2>
-          <small>{session.user.email} — {profile?.role ?? '...'}</small>
+          <h2>Paddy's Pastures</h2>
+          <small className="text-muted">{profile?.full_name || session.user.email} — {profile?.role ?? '...'}</small>
         </div>
-        <button onClick={() => supabase.auth.signOut()} style={{ padding: 8 }}>Sign out</button>
+        <button className="btn-secondary" onClick={() => supabase.auth.signOut()}>Sign out</button>
       </div>
 
       {(isAdmin || isStaff) ? (
         <>
           {isAdmin && <AddPersonForm onAdded={() => setRefreshKey((k) => k + 1)} />}
           {isAdmin && <CreateHorseForm refreshSignal={refreshKey} onCreated={() => setRefreshKey((k) => k + 1)} />}
-          <HorseGrid refreshSignal={refreshKey} />
-          <hr style={{ margin: '32px 0', border: 'none', borderTop: '1px solid #d8d2c4' }} />
+          <HorseGrid refreshSignal={refreshKey} isAdmin={isAdmin} />
+          <hr className="divider" />
           <StaffInbox userId={session.user.id} />
         </>
       ) : (
         <>
           <BoarderHorseView userId={session.user.id} />
-          <hr style={{ margin: '32px 0', border: 'none', borderTop: '1px solid #d8d2c4' }} />
+          <hr className="divider" />
           <BoarderMessages userId={session.user.id} />
         </>
       )}
@@ -67,7 +67,7 @@ function App() {
     return () => { active = false }
   }, [session])
 
-  if (loading) return <p style={{ padding: 40 }}>Loading...</p>
+  if (loading) return <p className="page-loading">Loading...</p>
   if (!session) return <Auth />
   
   // Force temp-password users to set a real one before anything else

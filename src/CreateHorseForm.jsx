@@ -37,42 +37,38 @@ export default function CreateHorseForm({ onCreated, refreshSignal }) {
     setSaving(false)
   }
 
-  const label = { display: 'block', fontSize: 13, marginBottom: 2, color: '#2F4A3D' }
-  const input = { display: 'block', width: '100%', marginBottom: 10, padding: 8 }
-
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 420, marginBottom: 32 }}>
-      <h3 style={{ color: '#2F4A3D' }}>Add a horse</h3>
+    <form onSubmit={handleSubmit} className="form-narrow">
+      <h3>Add a horse</h3>
 
-      <label style={label}>Owner (boarder)</label>
-      <select value={form.owner_id} onChange={(e) => update('owner_id', e.target.value)} required style={input}>
+      <label className="field-label">Owner (boarder)</label>
+      <select value={form.owner_id} onChange={(e) => update('owner_id', e.target.value)} required>
         <option value="">Select a boarder...</option>
         {boarders.map((b) => <option key={b.id} value={b.id}>{b.full_name || b.email}</option>)}
       </select>
 
-      <label style={label}>Horse name</label>
-      <input value={form.name} onChange={(e) => update('name', e.target.value)} required style={input} />
+      <label className="field-label">Horse name</label>
+      <input value={form.name} onChange={(e) => update('name', e.target.value)} required />
 
-      <label style={label}>Stall number</label>
-      <input value={form.stall_number} onChange={(e) => update('stall_number', e.target.value)} style={input} />
+      <label className="field-label">Stall number</label>
+      <input value={form.stall_number} onChange={(e) => update('stall_number', e.target.value)} />
 
-      <label style={label}>Hay (type & amount)</label>
-      <input value={form.hay} onChange={(e) => update('hay', e.target.value)} style={input} />
+      <label className="field-label">Hay (type & amount)</label>
+      <input value={form.hay} onChange={(e) => update('hay', e.target.value)} />
 
-      <label style={label}>Grain (type & amount)</label>
-      <input value={form.grain} onChange={(e) => update('grain', e.target.value)} style={input} />
+      <label className="field-label">Grain (type & amount)</label>
+      <input value={form.grain} onChange={(e) => update('grain', e.target.value)} />
 
-      <label style={label}>Pasture</label>
-      <input value={form.pasture} onChange={(e) => update('pasture', e.target.value)} style={input} />
+      <label className="field-label">Pasture</label>
+      <input value={form.pasture} onChange={(e) => update('pasture', e.target.value)} />
 
-      <label style={label}>Turnout</label>
-      <input value={form.turnout} onChange={(e) => update('turnout', e.target.value)} style={input} />
+      <label className="field-label">Turnout</label>
+      <input value={form.turnout} onChange={(e) => update('turnout', e.target.value)} />
 
-      <button type="submit" disabled={saving}
-        style={{ padding: '8px 16px', background: '#2F4A3D', color: 'white', border: 'none', borderRadius: 4 }}>
+      <button type="submit" className="btn" disabled={saving}>
         {saving ? 'Saving...' : 'Create horse'}
       </button>
-      {message && <p style={{ marginTop: 10 }}>{message}</p>}
+      {message && <p className="form-message">{message}</p>}
     </form>
   )
 }

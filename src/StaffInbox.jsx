@@ -30,27 +30,25 @@ export default function StaffInbox({ userId }) {
 
   return (
     <div>
-      <h3 style={{ color: '#2F4A3D' }}>Barn inbox</h3>
-      <div style={{ display: 'flex', gap: 16, border: '1px solid #d8d2c4', borderRadius: 8, overflow: 'hidden', height: 400 }}>
+      <h3>Barn inbox</h3>
+      <div className="inbox-panel">
         {/* Left: list of conversations */}
-        <div style={{ width: 200, borderRight: '1px solid #d8d2c4', overflowY: 'auto', background: '#fbf9f5' }}>
+        <div className="inbox-list">
           {threads.length === 0
-            ? <p style={{ padding: 12, color: '#777', fontSize: 13 }}>No conversations yet.</p>
+            ? <p className="inbox-empty">No conversations yet.</p>
             : threads.map((t) => (
                 <button key={t.boarder_id} onClick={() => setActiveBoarder(t)}
-                  style={{ display: 'block', width: '100%', textAlign: 'left', padding: 12, border: 'none',
-                    borderBottom: '1px solid #eee', cursor: 'pointer',
-                    background: activeBoarder?.boarder_id === t.boarder_id ? '#e7e2d6' : 'transparent' }}>
+                  className={`inbox-thread-btn ${activeBoarder?.boarder_id === t.boarder_id ? 'inbox-thread-btn--active' : ''}`}>
                   {t.name}
                 </button>
               ))}
         </div>
 
         {/* Right: the selected conversation */}
-        <div style={{ flex: 1, padding: 12 }}>
+        <div className="inbox-conversation">
           {activeBoarder
             ? <Conversation boarder={activeBoarder} staffId={userId} />
-            : <p style={{ color: '#777' }}>Select a conversation to view and reply.</p>}
+            : <p className="text-muted">Select a conversation to view and reply.</p>}
         </div>
       </div>
     </div>
@@ -92,25 +90,24 @@ function Conversation({ boarder, staffId }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div style={{ flex: 1, overflowY: 'auto', marginBottom: 8 }}>
+    <div className="conversation">
+      <div className="conversation-messages">
         {messages.map((m) => {
           const fromStaff = m.sender_id !== boarder.boarder_id
           return (
-            <div key={m.id} style={{ textAlign: fromStaff ? 'right' : 'left', marginBottom: 8 }}>
-              <span style={{ display: 'inline-block', padding: '8px 12px', borderRadius: 12,
-                background: fromStaff ? '#2F4A3D' : '#e7e2d6', color: fromStaff ? 'white' : '#22302a', maxWidth: '80%' }}>
+            <div key={m.id} className={`chat-row ${fromStaff ? 'chat-row--mine' : ''}`}>
+              <span className={`chat-bubble ${fromStaff ? 'chat-bubble--mine' : ''}`}>
                 {m.body}
               </span>
-              <div style={{ fontSize: 11, color: '#999' }}>{fromStaff ? 'Barn' : boarder.name}</div>
+              <div className="chat-meta">{fromStaff ? 'Barn' : boarder.name}</div>
             </div>
           )
         })}
         <div ref={bottomRef} />
       </div>
-      <form onSubmit={reply} style={{ display: 'flex', gap: 8 }}>
-        <input value={body} onChange={(e) => setBody(e.target.value)} placeholder="Reply..." style={{ flex: 1, padding: 10 }} />
-        <button type="submit" style={{ padding: '10px 16px', background: '#2F4A3D', color: 'white', border: 'none', borderRadius: 4 }}>
+      <form onSubmit={reply} className="chat-form">
+        <input value={body} onChange={(e) => setBody(e.target.value)} placeholder="Reply..." className="chat-input" />
+        <button type="submit" className="btn">
           Send
         </button>
       </form>

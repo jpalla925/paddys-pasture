@@ -62,39 +62,35 @@ export default function AddPersonForm({ onAdded }) {
     setSaving(false)
   }
 
-  const label = { display: 'block', fontSize: 13, marginBottom: 2, color: '#2F4A3D' }
-  const input = { display: 'block', width: '100%', marginBottom: 10, padding: 8 }
-
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 420, marginBottom: 32, padding: 20, border: '1px solid #d8d2c4', borderRadius: 8, background: '#fbf9f5' }}>
-      <h3 style={{ color: '#2F4A3D', marginTop: 0 }}>Add a person</h3>
+    <form onSubmit={handleSubmit} className="card form-narrow">
+      <h3>Add a person</h3>
 
-      <label style={label}>First name</label>
-      <input value={form.firstName} onChange={(e) => update('firstName', e.target.value)} required style={input} />
+      <label className="field-label">First name</label>
+      <input value={form.firstName} onChange={(e) => update('firstName', e.target.value)} required />
 
-      <label style={label}>Last name</label>
-      <input value={form.lastName} onChange={(e) => update('lastName', e.target.value)} required style={input} />
+      <label className="field-label">Last name</label>
+      <input value={form.lastName} onChange={(e) => update('lastName', e.target.value)} required />
 
-      <label style={label}>Email</label>
-      <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} required style={input} />
+      <label className="field-label">Email</label>
+      <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} required />
 
-      <label style={label}>Phone (10 digits)</label>
-      <input type="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} required style={input} />
+      <label className="field-label">Phone (10 digits)</label>
+      <input type="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} required />
 
-      <label style={label}>Role</label>
-      <select value={form.role} onChange={(e) => update('role', e.target.value)} style={input}>
+      <label className="field-label">Role</label>
+      <select value={form.role} onChange={(e) => update('role', e.target.value)}>
         <option value="boarder">Boarder</option>
         <option value="staff">Staff</option>
       </select>
 
-      <label style={label}>Temporary password</label>
-      <input value={form.password} onChange={(e) => update('password', e.target.value)} required style={input} />
+      <label className="field-label">Temporary password</label>
+      <input value={form.password} onChange={(e) => update('password', e.target.value)} required />
 
-      <button type="submit" disabled={saving}
-        style={{ padding: '8px 16px', background: '#2F4A3D', color: 'white', border: 'none', borderRadius: 4 }}>
+      <button type="submit" className="btn" disabled={saving}>
         {saving ? 'Adding...' : 'Add person'}
       </button>
-      {message && <p style={{ marginTop: 10 }}>{message}</p>}
+      {message && <p className="form-message">{message}</p>}
     </form>
   )
 }

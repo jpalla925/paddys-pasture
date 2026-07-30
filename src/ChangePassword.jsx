@@ -45,24 +45,21 @@ export default function ChangePassword({ userId, onDone }) {
   }
 
   return (
-    <div style={{ maxWidth: 340, margin: '80px auto', fontFamily: 'sans-serif' }}>
-      <h2 style={{ color: '#2F4A3D' }}>Set your password</h2>
-      <p style={{ fontSize: 14, color: '#555' }}>
+    <div className="auth-page">
+      <h2>Set your password</h2>
+      <p className="text-muted">
         You're using a temporary password. Please choose your own to continue.
       </p>
       <form onSubmit={handleSubmit}>
         <input type="password" placeholder="New password" value={password}
-          onChange={(e) => setPassword(e.target.value)} required
-          style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
+          onChange={(e) => setPassword(e.target.value)} required />
         <input type="password" placeholder="Confirm new password" value={confirm}
-          onChange={(e) => setConfirm(e.target.value)} required
-          style={{ display: 'block', width: '100%', marginBottom: 8, padding: 8 }} />
-        <button type="submit" disabled={saving}
-          style={{ width: '100%', padding: 8, background: '#2F4A3D', color: 'white', border: 'none', borderRadius: 4 }}>
+          onChange={(e) => setConfirm(e.target.value)} required />
+        <button type="submit" className="btn btn-block" disabled={saving}>
           {saving ? 'Saving...' : 'Set password'}
         </button>
       </form>
-      {message && <p style={{ marginTop: 12, color: '#b00' }}>{message}</p>}
+      {message && <p className="form-error">{message}</p>}
     </div>
   )
 }
