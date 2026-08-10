@@ -101,10 +101,9 @@ export default function ChangePassword({ userId, role, onDone }) {
             <label className="field-label">Preferred payment method</label>
             <select value={paymentPref} onChange={(e) => setPaymentPref(e.target.value)}>
               <option value="">Select...</option>
-              <option value="Check">Check</option>
-              <option value="Venmo">Venmo</option>
+              <option value="Check">Zelle</option>
+              <option value="Venmo">Check</option>
               <option value="Cash">Cash</option>
-              <option value="Card">Card</option>
             </select>
           </>
         )}
