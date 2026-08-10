@@ -45,7 +45,7 @@ export default function HorsePrintPage() {
 
       {/* The sheet */}
       <div className="print-header">
-        <h1>{horse.name} <span className="print-title-owner">({owner})</span></h1>
+        <h1>{horse.name} <span className="print-title-owner">{owner}</span> {horse.owner?.phone}</h1>
       </div>
 
       <div className="print-top-row">
@@ -55,6 +55,7 @@ export default function HorsePrintPage() {
             : <span className="print-photo-placeholder">🐴</span>}
         </div>
         <div className="print-fields">
+          <Field label="Breed" value={horse.breed} />
           <Field label="Sex" value={horse.sex} />
           <Field label="Age" value={horse.age} />
           <Field label="Color" value={horse.color} />
@@ -78,7 +79,7 @@ export default function HorsePrintPage() {
         <Field label="Veterinarian" value={horse.vet_info} />
         <Field label="Farrier" value={horse.farrier_info} />
         <Field label="Emergency contacts" value={horse.emergency_contacts} />
-        <Field label="Owner phone" value={horse.owner?.phone} />
+        <Field label="Coggins date" value={horse.coggins_date} />
       </div>
 
       <div className="print-notes">

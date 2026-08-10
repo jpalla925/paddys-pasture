@@ -3,7 +3,7 @@ import { supabase } from './supabaseClient'
 
 export default function AddPersonForm({ onAdded }) {
   const [form, setForm] = useState({
-    firstName: '', lastName: '', email: '', phone: '', role: 'boarder', password: '',
+    email: '', role: 'boarder', password: ''
   })
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
@@ -18,12 +18,6 @@ export default function AddPersonForm({ onAdded }) {
     setMessage('')
 
     // Basic checks
-    const digits = form.phone.replace(/\D/g, '')
-    if (digits.length !== 10) {
-      setMessage('Please enter a valid 10-digit phone number.')
-      setSaving(false)
-      return
-    }
     if (form.password.length < 6) {
       setMessage('Temp password must be at least 6 characters.')
       setSaving(false)
@@ -35,14 +29,9 @@ export default function AddPersonForm({ onAdded }) {
       body: {
         email: form.email.trim(),
         password: form.password,
-        firstName: form.firstName.trim(),
-        lastName: form.lastName.trim(),
-        phone: digits,
         role: form.role,
       },
     })
-
-    console.log('Function response:', { data, error })
 
     if (error || data?.error) {
         let detail = error.message
@@ -55,8 +44,8 @@ export default function AddPersonForm({ onAdded }) {
       setSaving(false)
       return
     } else {
-      setMessage(`${form.firstName} added as ${form.role}. Give them the temp password to change on first login.`)
-      setForm({ firstName: '', lastName: '', email: '', phone: '', role: 'boarder', password: '' })
+      setMessage(`${form.email} added as ${form.role}. Email has been sent with documentation and temp password.`)
+      setForm({ email: '', role: 'boarder', password: '' })
       onAdded?.()
     }
     setSaving(false)
@@ -64,19 +53,10 @@ export default function AddPersonForm({ onAdded }) {
 
   return (
     <form onSubmit={handleSubmit} className="card form-narrow">
-      <h3>Add a person</h3>
-
-      <label className="field-label">First name</label>
-      <input value={form.firstName} onChange={(e) => update('firstName', e.target.value)} required />
-
-      <label className="field-label">Last name</label>
-      <input value={form.lastName} onChange={(e) => update('lastName', e.target.value)} required />
+      <h3>Add boarder</h3>
 
       <label className="field-label">Email</label>
       <input type="email" value={form.email} onChange={(e) => update('email', e.target.value)} required />
-
-      <label className="field-label">Phone (10 digits)</label>
-      <input type="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} required />
 
       <label className="field-label">Role</label>
       <select value={form.role} onChange={(e) => update('role', e.target.value)}>
@@ -88,7 +68,7 @@ export default function AddPersonForm({ onAdded }) {
       <input value={form.password} onChange={(e) => update('password', e.target.value)} required />
 
       <button type="submit" className="btn" disabled={saving}>
-        {saving ? 'Adding...' : 'Add person'}
+        {saving ? 'Adding...' : 'Add boarder'}
       </button>
       {message && <p className="form-message">{message}</p>}
     </form>

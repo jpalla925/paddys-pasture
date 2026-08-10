@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
     }
 
     // 3. Read the new person's details from the request
-    const { email, password, firstName, lastName, phone, role } = await req.json()
+    const { email, password, role } = await req.json()
 
     // 4. Create the account using the privileged (service role) key
     const adminClient = createClient(
@@ -52,14 +52,50 @@ Deno.serve(async (req) => {
     const { error: profileError } = await adminClient
       .from('profiles')
       .update({
-        full_name: `${firstName} ${lastName}`,
-        phone,
         role,
         must_change_password: true,
       })
       .eq('id', created.user.id)
     if (profileError) {
       return new Response(JSON.stringify({ error: profileError.message }), { status: 400, headers: corsHeaders })
+    }
+    
+    const loginUrl = 'https://paddyspasture.netlify.app'
+    const emailHtml = `
+      <div style="font-family: sans-serif; color: #22302a; max-width: 500px;">
+        <h2 style="color: #2F4A3D;">Welcome to Paddy's Pastures</h2>
+        <p>An account has been created for you at Paddy's Pastures. Here's how to get started:</p>
+        <p>
+          <strong>Login page:</strong> <a href="${loginUrl}" style="color: #2F4A3D;">${loginUrl}</a><br/>
+          <strong>Your email:</strong> ${email}<br/>
+          <strong>Temporary password:</strong> ${password}
+        </p>
+        <p>When you first log in, you'll set your own password and fill in your details.
+        If you're a boarder, you'll also add your horse's information.</p>
+        <p>See you at the barn!</p>
+      </div>
+    `
+
+    try {
+      const emailResp = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'Paddy\'s Pastures <onboarding@resend.dev>',
+          to: email,
+          subject: 'Welcome to Paddy\'s Pastures — your login details',
+          html: emailHtml,
+        }),
+      })
+      if (!emailResp.ok) {
+        const errBody = await emailResp.json()
+        console.error('Welcome email failed:', errBody)
+      }
+    } catch (mailErr) {
+      console.error('Welcome email threw:', mailErr)
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders })

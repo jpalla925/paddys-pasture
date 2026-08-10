@@ -359,6 +359,75 @@ input:focus, select:focus, textarea:focus {
   line-height: 1.5;
 }
 
+/* Daily treatment checklist */
+.checklist-scroll {
+  overflow-x: auto;
+  margin: 0 -4px;
+}
+.checklist-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.checklist-table th,
+.checklist-table td {
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+}
+.checklist-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--saddle);
+  font-weight: 600;
+}
+.checklist-horse-col {
+  text-align: left;
+  padding-left: 4px !important;
+  white-space: nowrap;
+}
+.checklist-owner-col { white-space: nowrap; }
+.checklist-sent { font-size: 13px; }
+.checklist-table tbody tr:hover { background: var(--cream); }
+.checklist-table tbody tr.row-complete { background: rgba(47, 74, 61, 0.06); }
+
+.btn-small {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+.task-cell {
+  width: 36px;
+  height: 36px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--muted-light);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+.task-cell:hover { transform: scale(1.06); }
+.task-cell:active { transform: scale(0.96); }
+.task-unset {
+  background: var(--cream);
+  color: var(--muted-light);
+}
+.task-done {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: #fff;
+}
+.task-na {
+  background: var(--tan);
+  border-color: var(--saddle);
+  color: var(--saddle);
+  font-size: 11px;
+}
+
 /* Horse print sheet */
 .print-sheet {
   max-width: 720px;
@@ -422,3 +491,39 @@ input:focus, select:focus, textarea:focus {
   color: var(--saddle);
 }
 .print-field-value { font-size: 15px; }
+
+.medical-records { margin-top: 16px; }
+.record-list {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+.record-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.record-list li:last-child { border-bottom: none; }
+.record-icon { font-size: 15px; }
+.record-list .btn-link { flex: 1; text-align: left; }
+.record-date { font-size: 13px; white-space: nowrap; }
+.record-upload-btn { margin-top: 4px; }
+
+.photo-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.photo-upload-preview {
+  max-width: 100%;
+  max-height: 200px;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+  margin-bottom: 8px;
+}

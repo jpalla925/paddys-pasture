@@ -3,13 +3,14 @@ import { Routes, Route } from 'react-router-dom'
 import { supabase } from './supabaseClient'
 import Auth from './Auth'
 import HorseGrid from './HorseGrid'
-import CreateHorseForm from './CreateHorseForm'
+import NewBoardedHorses from './NewBoardedHorses'
 import BoarderHorseView from './BoarderHorseView'
 import BoarderMessages from './BoarderMessages'
 import StaffInbox from './StaffInbox'
 import HorsePrintPage from './HorsePrintPage'
 import AddPersonForm from './AddPersonForm'
 import ChangePassword from './ChangePassword'
+import TreatmentChecklist from './TreatmentChecklist'
 
 function MainApp({ session, profile, refreshKey, setRefreshKey }) {
   const isAdmin = profile?.role === 'admin'
@@ -28,10 +29,11 @@ function MainApp({ session, profile, refreshKey, setRefreshKey }) {
       {(isAdmin || isStaff) ? (
         <>
           {isAdmin && <AddPersonForm onAdded={() => setRefreshKey((k) => k + 1)} />}
-          {isAdmin && <CreateHorseForm refreshSignal={refreshKey} onCreated={() => setRefreshKey((k) => k + 1)} />}
+          {isAdmin && <NewBoardedHorses refreshSignal={refreshKey} />}
+          <TreatmentChecklist userId={session.user.id} />
           <HorseGrid refreshSignal={refreshKey} isAdmin={isAdmin} />
           <hr className="divider" />
-          <StaffInbox userId={session.user.id} />
+          <StaffInbox userId={session.user.id} />  
         </>
       ) : (
         <>
@@ -75,6 +77,7 @@ function App() {
     return (
       <ChangePassword
         userId={session.user.id}
+        role={profile?.role}
         onDone={() => setProfile((p) => ({ ...p, must_change_password: false }))}
       />
     )

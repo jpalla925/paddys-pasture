@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import { Link } from 'react-router-dom'
 import DisplayField from './DisplayField'
+import MedicalRecords from './MedicalRecords'
 
 export default function HorseGrid({ refreshSignal, isAdmin }) {
   const [horses, setHorses] = useState([])
@@ -92,6 +93,7 @@ const ADMIN_FIELDS = [
 ]
 const BOARDER_FIELDS = [
   ['photo_url', 'Photo URL'],
+  ['breed', 'Breed'],
   ['sex', 'Sex'],
   ['age', 'Age'],
   ['color', 'Color'],
@@ -102,6 +104,9 @@ const BOARDER_FIELDS = [
   ['emergency_contacts', 'Emergency contacts'],
   ['behavior_notes', 'Behavior & handling notes'],
   ['boarding_date', 'Boarding date'],
+  ['coggins_date', 'Coggins date'],
+  ['intro_story', 'Short intro story'],
+  ['photo_permission', 'Photo permission'],
 ]
 
 function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
@@ -137,13 +142,24 @@ function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
   if (editing) {
     const renderField = ([field, labelText]) => (
       <div key={field}>
-        <label className="field-label">{labelText}</label>
-        {field === 'boarding_date' ? (
-          <input type="date" value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
-        ) : field === 'behavior_notes' ? (
-          <textarea value={form[field] || ''} onChange={(e) => update(field, e.target.value)} rows={3} />
+        {field === 'photo_permission' ? (
+          <label className="field-label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="checkbox" style={{ width: 'auto' }}
+              checked={!!form[field]}
+              onChange={(e) => update(field, e.target.checked)} />
+            {labelText}
+          </label>
         ) : (
-          <input value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
+          <>
+            <label className="field-label">{labelText}</label>
+            {field === 'boarding_date' || field === 'coggins_date' ? (
+              <input type="date" value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
+            ) : field === 'behavior_notes' || field === 'intro_story' ? (
+              <textarea value={form[field] || ''} onChange={(e) => update(field, e.target.value)} rows={3} />
+            ) : (
+              <input value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
+            )}
+          </>
         )}
       </div>
     )
@@ -187,6 +203,7 @@ function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
             : <span className="print-photo-placeholder">🐴</span>}
         </div>
         <div className="print-fields">
+          <DisplayField label="Breed" value={horse.breed} />
           <DisplayField label="Sex" value={horse.sex} />
           <DisplayField label="Age" value={horse.age} />
           <DisplayField label="Color" value={horse.color} />
@@ -209,11 +226,17 @@ function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
         <DisplayField label="Farrier info" value={horse.farrier_info} />
         <DisplayField label="Emergency contacts" value={horse.emergency_contacts} />
         <DisplayField label="Owner phone" value={horse.owner?.phone} />
+        <DisplayField label="Coggins date" value={horse.coggins_date} />
+        <DisplayField label="Photo permission" value={horse.photo_permission ? 'Yes' : 'No'} />
       </div>
 
       <div className="print-notes">
         <DisplayField label="Behavior & handling notes" value={horse.behavior_notes} />
+        <DisplayField label="Short intro story" value={horse.intro_story} />
       </div>
+
+      <MedicalRecords horse={horse} userId={horse.owner_id} canUpload={false} />
+
     </div>
   )
 }
