@@ -79,17 +79,6 @@ Privileged actions — admin account creation, sending email/SMS — run in Supa
 
 ---
 
-## What I Learned
-
-[FILL IN: a few bullets in your own words. Ideas drawn from the build, reword as your own:
-- Enforcing security at the database layer vs. the UI, and why it matters
-- Working with a non-technical client — translating vague requests into features and redesigning after real-world feedback
-- Integrating third-party services and their real-world gotchas (Twilio A2P registration, OAuth token lifecycles, DNS/email verification, private-file signed URLs)
-- Database migrations and schema evolution without losing data
-- Learning backend concepts (RLS, Edge Functions, Realtime) as features required them]
-
----
-
 ## Notes
 
 Built as both a production application for a real client and a portfolio piece demonstrating full-stack development, database security, and end-to-end delivery.
