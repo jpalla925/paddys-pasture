@@ -1,0 +1,1 @@
+alter table public.profiles add column if not exists heard_about_other text;

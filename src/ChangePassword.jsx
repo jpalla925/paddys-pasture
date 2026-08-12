@@ -12,6 +12,8 @@ export default function ChangePassword({ userId, role, onDone }) {
   const [saving, setSaving] = useState(false)
   const [heardAbout, setHeardAbout] = useState('')
   const [paymentPref, setPaymentPref] = useState('')
+  const [zelleAccount, setZelleAccount] = useState('')
+  const [otherHeardAbout, setOtherHeardAbout] = useState('')
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -49,7 +51,9 @@ export default function ChangePassword({ userId, role, onDone }) {
         phone: digits,
         address: address.trim() || null,
         heard_about: heardAbout || null,
+        heard_about_other: heardAbout === 'Other' ? (otherHeardAbout.trim() || null) : null,
         payment_preference: paymentPref || null,
+        zelle_account: paymentPref === 'Zelle' ? (zelleAccount.trim() || null) : null,
         must_change_password: false
       })
     .eq('id', userId)
@@ -78,13 +82,17 @@ export default function ChangePassword({ userId, role, onDone }) {
       </p>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="First name" value={firstName}
-          onChange={(e) => setFirstName(e.target.value)} required />
+          onChange={(e) => setFirstName(e.target.value)} required 
+          autoComplete="given-name" />
         <input type="text" placeholder="Last name" value={lastName}
-          onChange={(e) => setLastName(e.target.value)} required />
+          onChange={(e) => setLastName(e.target.value)} required 
+          autoComplete="family-name" />
         <input type="tel" placeholder="Phone number" value={phone}
-          onChange={(e) => setPhone(e.target.value)} required />
+          onChange={(e) => setPhone(e.target.value)} required 
+          autoComplete="tel" />
         <input type="text" placeholder="Mailing Address" value={address}
-          onChange={(e) => setAddress(e.target.value)} />
+          onChange={(e) => setAddress(e.target.value)} 
+          autoComplete="street-address" />
 
         {role === 'boarder' && (
           <>
@@ -93,25 +101,44 @@ export default function ChangePassword({ userId, role, onDone }) {
               <option value="">Select...</option>
               <option value="Facebook">Facebook</option>
               <option value="Instagram">Instagram</option>
-              <option value="Google search">Google search</option>
+              <option value="Google search">Web search</option>
               <option value="Word of mouth">Word of mouth</option>
               <option value="Other">Other</option>
             </select>
 
+            {heardAbout === 'Other' && (
+              <input type="text" placeholder="Please specify" value={otherHeardAbout}
+                onChange={(e) => setOtherHeardAbout(e.target.value)} 
+                autoComplete="off"/>
+            )}
+
             <label className="field-label">Preferred payment method</label>
             <select value={paymentPref} onChange={(e) => setPaymentPref(e.target.value)}>
               <option value="">Select...</option>
-              <option value="Check">Zelle</option>
-              <option value="Venmo">Check</option>
+              <option value="Zelle">Zelle</option>
+              <option value="Check">Check</option>
               <option value="Cash">Cash</option>
             </select>
+
+            {paymentPref === 'Zelle' && (
+              <>
+                <label className="field-label">Zelle account name (email or phone)</label>
+                <input value={zelleAccount} onChange={(e) => setZelleAccount(e.target.value)} 
+                autoComplete="off"/>
+                <p className="text-muted" style={{ fontSize: 13, marginTop: -4 }}>
+                  Zelle information is kept private and only shared with barn management.
+                </p>
+              </>
+            )}
           </>
         )}
         
         <input type="password" placeholder="New password" value={password}
-          onChange={(e) => setPassword(e.target.value)} required />
+          onChange={(e) => setPassword(e.target.value)} required 
+          autoComplete="new-password" />
         <input type="password" placeholder="Confirm new password" value={confirm}
-          onChange={(e) => setConfirm(e.target.value)} required />
+          onChange={(e) => setConfirm(e.target.value)} required 
+          autoComplete="new-password" />
         <button type="submit" className="btn btn-block" disabled={saving}>
           {saving ? 'Saving...' : 'Complete Setup'}
         </button>

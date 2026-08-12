@@ -70,6 +70,7 @@ export default function BoarderHorseView({ userId }) {
   const [horses, setHorses] = useState([])
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
+  const [selectedId, setSelectedId] = useState(null)   // which completed horse's detail is open
 
   async function loadHorses() {
     const { data } = await supabase.from('horses').select('*').eq('owner_id', userId).order('name')
@@ -79,6 +80,16 @@ export default function BoarderHorseView({ userId }) {
   useEffect(() => { loadHorses() }, [userId])
 
   if (loading) return <p>Loading your horses...</p>
+
+  // If a completed horse is selected, show its detail view
+  if (selectedId) {
+    const horse = horses.find((h) => h.id === selectedId)
+    if (!horse) { setSelectedId(null); return null }
+    return <HorseDetail horse={horse} onBack={() => setSelectedId(null)} />
+  }
+
+  const incomplete = horses.filter((h) => !h.boarder_completed)
+  const completed = horses.filter((h) => h.boarder_completed)
 
   return (
     <div className="horse-gallery">
@@ -100,9 +111,29 @@ export default function BoarderHorseView({ userId }) {
         />
       )}
 
-      {horses.map((horse) => (
+      {/* Incomplete horses stay as full editable cards */}
+      {incomplete.map((horse) => (
         <HorseCard key={horse.id} horse={horse} onChanged={loadHorses} />
       ))}
+
+      {/* Completed horses show as a gallery-style tile grid */}
+      {completed.length > 0 && (
+        <div className="horse-grid">
+          {completed.map((horse) => (
+            <div key={horse.id} className="horse-tile" onClick={() => setSelectedId(horse.id)} style={{ cursor: 'pointer' }}>
+              <div className="horse-tile-photo">
+                {horse.photo_url
+                  ? <img src={horse.photo_url} alt={horse.name} />
+                  : <span className="horse-tile-placeholder">🐴</span>}
+              </div>
+              <div className="horse-tile-info">
+                <strong className="horse-tile-name">{horse.name}</strong>
+                <div className="horse-tile-meta"><span className="badge-complete">✓ Complete</span></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -177,7 +208,7 @@ function HorseForm({ mode, userId, horse, onCancel, onDone }) {
       {SIMPLE_FIELDS.map(([field, labelText, required]) => (
         <div key={field}>
           <label className="field-label">
-            {labelText}{!required && <span className="text-muted"> (optional)</span>}
+            {labelText}{!required && <span className="text-muted"> Picture of owner with horse recommended.</span>}
           </label>
           <input value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
         </div>
@@ -244,6 +275,57 @@ function HorseCard({ horse, onChanged }) {
       onCancel={() => setEditing(false)}
       onDone={async () => { setEditing(false); await onChanged() }} />
   }
+
+  // ---------- Read-only detail for a completed horse (opened from the tile grid) ----------
+function HorseDetail({ horse, onBack }) {
+  const showStructured = (value) => (value ? value.split(SEP).filter(Boolean).join(' · ') : '—')
+
+  return (
+    <div className="card horse-card">
+      <div className="horse-card-header">
+        <button className="btn btn-secondary" onClick={onBack}>← Back</button>
+        <h4 className="text-saddle">
+          {horse.name} <span className="badge-complete">✓ Complete</span>
+        </h4>
+      </div>
+
+      <div className="print-top-row">
+        <div className="print-photo">
+          {horse.photo_url ? <img src={horse.photo_url} alt={horse.name} /> : <span className="print-photo-placeholder">🐴</span>}
+        </div>
+        <div className="print-fields">
+          <DisplayField label="Breed" value={horse.breed} />
+          <DisplayField label="Sex" value={horse.sex} />
+          <DisplayField label="Age" value={horse.age} />
+          <DisplayField label="Color" value={horse.color} />
+          <DisplayField label="Boarding date" value={horse.boarding_date} />
+        </div>
+      </div>
+
+      <div className="horse-card-facts">
+        <div>Stall: {horse.stall_number || '—'}</div>
+        <div>Hay: {horse.hay || '—'} &nbsp; Grain: {horse.grain || '—'}</div>
+        <div>Pasture: {horse.pasture || '—'} &nbsp; Turnout: {horse.turnout || '—'}</div>
+      </div>
+
+      <div className="print-grid">
+        <DisplayField label="Supplements" value={horse.supplements} />
+        <DisplayField label="Medications" value={horse.medications} />
+        <DisplayField label="Veterinarian" value={showStructured(horse.vet_info)} />
+        <DisplayField label="Farrier" value={showStructured(horse.farrier_info)} />
+        <DisplayField label="Emergency contact" value={showStructured(horse.emergency_contacts)} />
+        <DisplayField label="Coggins date" value={horse.coggins_date} />
+        <DisplayField label="Photo permission" value={horse.photo_permission ? 'Yes' : 'No'} />
+      </div>
+      <div className="print-notes">
+        <DisplayField label="Behavior & handling notes" value={horse.behavior_notes} />
+        <DisplayField label="Short intro story" value={horse.intro_story} />
+      </div>
+
+      <MedicalRecords horse={horse} userId={horse.owner_id} canUpload={true} />
+    </div>
+  )
+}
 
   // helper to show a structured field nicely
   const showStructured = (value) => (value ? value.split(SEP).filter(Boolean).join(' · ') : '—')
