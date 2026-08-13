@@ -1,4 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { sendEmail } from '../_shared/email.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -34,28 +35,14 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Missing to, subject, or html' }), { status: 400, headers: corsHeaders })
     }
 
-    // Send via Resend
-    const resp = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: 'Paddy\'s Pastures <onboarding@resend.dev>',   // test address for now
-        to,
-        subject,
-        html,
-      }),
-    })
-
-    const result = await resp.json()
-    if (!resp.ok) {
-      console.error('Resend error:', result)
-      return new Response(JSON.stringify({ error: result.message || 'Send failed' }), { status: 400, headers: corsHeaders })
+    // Send via the shared helper
+    try {
+      const { id } = await sendEmail({ to, subject, html })
+      return new Response(JSON.stringify({ success: true, id }), { status: 200, headers: corsHeaders })
+    } catch (mailErr) {
+      console.error('send-email error:', mailErr)
+      return new Response(JSON.stringify({ error: mailErr.message }), { status: 400, headers: corsHeaders })
     }
-
-    return new Response(JSON.stringify({ success: true, id: result.id }), { status: 200, headers: corsHeaders })
   } catch (err) {
     console.error('send-email error:', err)
     return new Response(JSON.stringify({ error: err.message }), { status: 500, headers: corsHeaders })

@@ -1,4 +1,5 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { sendEmail } from '../_shared/email.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -77,25 +78,14 @@ Deno.serve(async (req) => {
     `
 
     try {
-      const emailResp = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'Paddy\'s Pastures <onboarding@resend.dev>',
-          to: email,
-          subject: 'Welcome to Paddy\'s Pastures — your login details',
-          html: emailHtml,
-        }),
+      await sendEmail({
+        to: email,
+        subject: 'Welcome to Paddy\'s Pastures — your login details',
+        html: emailHtml,
       })
-      if (!emailResp.ok) {
-        const errBody = await emailResp.json()
-        console.error('Welcome email failed:', errBody)
-      }
     } catch (mailErr) {
-      console.error('Welcome email threw:', mailErr)
+      // Account is already created; a failed welcome email shouldn't fail the request.
+      console.error('Welcome email failed:', mailErr)
     }
 
     return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders })
