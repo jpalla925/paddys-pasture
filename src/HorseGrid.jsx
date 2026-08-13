@@ -85,6 +85,7 @@ export default function HorseGrid({ refreshSignal, isAdmin }) {
 // Fields an admin can edit, grouped for the form
 const ADMIN_FIELDS = [
   ['name', 'Horse name'],
+  ['boarding_date', 'Boarding date'],
   ['stall_number', 'Stall number'],
   ['hay', 'Hay'],
   ['grain', 'Grain'],
@@ -104,7 +105,6 @@ const BOARDER_FIELDS = [
   ['emergency_contacts', 'Emergency contacts'],
   ['behavior_notes', 'Behavior & handling notes'],
   ['boarding_date', 'Boarding date'],
-  ['coggins_date', 'Coggins date'],
   ['intro_story', 'Short intro story'],
   ['photo_permission', 'Photo permission'],
 ]
@@ -226,7 +226,6 @@ function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
         <DisplayField label="Farrier info" value={horse.farrier_info} />
         <DisplayField label="Emergency contacts" value={horse.emergency_contacts} />
         <DisplayField label="Owner phone" value={horse.owner?.phone} />
-        <DisplayField label="Coggins date" value={horse.coggins_date} />
         <DisplayField label="Photo permission" value={horse.photo_permission ? 'Yes' : 'No'} />
       </div>
 

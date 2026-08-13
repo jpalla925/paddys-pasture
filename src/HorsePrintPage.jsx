@@ -79,7 +79,6 @@ export default function HorsePrintPage() {
         <Field label="Veterinarian" value={horse.vet_info} />
         <Field label="Farrier" value={horse.farrier_info} />
         <Field label="Emergency contacts" value={horse.emergency_contacts} />
-        <Field label="Coggins date" value={horse.coggins_date} />
       </div>
 
       <div className="print-notes">

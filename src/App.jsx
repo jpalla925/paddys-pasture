@@ -29,7 +29,7 @@ function MainApp({ session, profile, refreshKey, setRefreshKey }) {
       {(isAdmin || isStaff) ? (
         <>
           {isAdmin && <AddPersonForm onAdded={() => setRefreshKey((k) => k + 1)} />}
-          {isAdmin && <NewBoardedHorses refreshSignal={refreshKey} />}
+          {isAdmin && <NewBoardedHorses refreshSignal={refreshKey} onSaved={() => setRefreshKey((k) => k + 1)} />}
           <TreatmentChecklist userId={session.user.id} />
           <HorseGrid refreshSignal={refreshKey} isAdmin={isAdmin} />
           <hr className="divider" />

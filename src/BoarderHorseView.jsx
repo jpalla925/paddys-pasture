@@ -24,7 +24,6 @@ const STRUCTURED_FIELDS = [
 
 const TAIL_FIELDS = [
   ['behavior_notes', 'Behavior & handling notes', true],
-  ['boarding_date', 'Boarding date', true],
 ]
 
 // --- helpers for combining/splitting structured fields ---
@@ -176,7 +175,6 @@ function HorseForm({ mode, userId, horse, onCancel, onDone }) {
       name: name.trim(),
       ...buildUpdates(form, structured),
       photo_url: form.photo_url || null,
-      coggins_date: form.coggins_date || null,
       intro_story: String(form.intro_story ?? '').trim() || null,
       photo_permission: !!form.photo_permission,
     }
@@ -231,12 +229,6 @@ function HorseForm({ mode, userId, horse, onCancel, onDone }) {
       <label className="field-label">Behavior & handling notes</label>
       <textarea value={form.behavior_notes || ''} onChange={(e) => update('behavior_notes', e.target.value)} rows={3} />
 
-      <label className="field-label">Boarding date</label>
-      <input type="date" value={form.boarding_date || ''} onChange={(e) => update('boarding_date', e.target.value)} />
-
-      <label className="field-label">Coggins date</label>
-      <input type="date" value={form.coggins_date || ''} onChange={(e) => update('coggins_date', e.target.value)} />
-
       <label className="field-label">Short intro story <span className="text-muted">(for the barn's social media)</span></label>
       <textarea value={form.intro_story || ''} onChange={(e) => update('intro_story', e.target.value)} rows={3}
         placeholder="A few sentences introducing you and your horse..." />
@@ -275,58 +267,6 @@ function HorseCard({ horse, onChanged }) {
       onCancel={() => setEditing(false)}
       onDone={async () => { setEditing(false); await onChanged() }} />
   }
-
-  // ---------- Read-only detail for a completed horse (opened from the tile grid) ----------
-function HorseDetail({ horse, onBack }) {
-  const showStructured = (value) => (value ? value.split(SEP).filter(Boolean).join(' · ') : '—')
-
-  return (
-    <div className="card horse-card">
-      <div className="horse-card-header">
-        <button className="btn btn-secondary" onClick={onBack}>← Back</button>
-        <h4 className="text-saddle">
-          {horse.name} <span className="badge-complete">✓ Complete</span>
-        </h4>
-      </div>
-
-      <div className="print-top-row">
-        <div className="print-photo">
-          {horse.photo_url ? <img src={horse.photo_url} alt={horse.name} /> : <span className="print-photo-placeholder">🐴</span>}
-        </div>
-        <div className="print-fields">
-          <DisplayField label="Breed" value={horse.breed} />
-          <DisplayField label="Sex" value={horse.sex} />
-          <DisplayField label="Age" value={horse.age} />
-          <DisplayField label="Color" value={horse.color} />
-          <DisplayField label="Boarding date" value={horse.boarding_date} />
-        </div>
-      </div>
-
-      <div className="horse-card-facts">
-        <div>Stall: {horse.stall_number || '—'}</div>
-        <div>Hay: {horse.hay || '—'} &nbsp; Grain: {horse.grain || '—'}</div>
-        <div>Pasture: {horse.pasture || '—'} &nbsp; Turnout: {horse.turnout || '—'}</div>
-      </div>
-
-      <div className="print-grid">
-        <DisplayField label="Supplements" value={horse.supplements} />
-        <DisplayField label="Medications" value={horse.medications} />
-        <DisplayField label="Veterinarian" value={showStructured(horse.vet_info)} />
-        <DisplayField label="Farrier" value={showStructured(horse.farrier_info)} />
-        <DisplayField label="Emergency contact" value={showStructured(horse.emergency_contacts)} />
-        <DisplayField label="Coggins date" value={horse.coggins_date} />
-        <DisplayField label="Photo permission" value={horse.photo_permission ? 'Yes' : 'No'} />
-      </div>
-      <div className="print-notes">
-        <DisplayField label="Behavior & handling notes" value={horse.behavior_notes} />
-        <DisplayField label="Short intro story" value={horse.intro_story} />
-      </div>
-
-      <MedicalRecords horse={horse} userId={horse.owner_id} canUpload={true} />
-    </div>
-  )
-}
-
   // helper to show a structured field nicely
   const showStructured = (value) => (value ? value.split(SEP).filter(Boolean).join(' · ') : '—')
 
@@ -379,6 +319,56 @@ function HorseDetail({ horse, onBack }) {
           Not finished yet — click "Edit / Finish" to complete and submit.
         </p>
       )}
+    </div>
+  )
+}
+
+// ---------- Read-only detail for a completed horse (opened from the tile grid) ----------
+function HorseDetail({ horse, onBack }) {
+  const showStructured = (value) => (value ? value.split(SEP).filter(Boolean).join(' · ') : '—')
+
+  return (
+    <div className="card horse-card">
+      <div className="horse-card-header">
+        <button className="btn btn-secondary" onClick={onBack}>← Back</button>
+        <h4 className="text-saddle">
+          {horse.name} <span className="badge-complete">✓ Complete</span>
+        </h4>
+      </div>
+
+      <div className="print-top-row">
+        <div className="print-photo">
+          {horse.photo_url ? <img src={horse.photo_url} alt={horse.name} /> : <span className="print-photo-placeholder">🐴</span>}
+        </div>
+        <div className="print-fields">
+          <DisplayField label="Breed" value={horse.breed} />
+          <DisplayField label="Sex" value={horse.sex} />
+          <DisplayField label="Age" value={horse.age} />
+          <DisplayField label="Color" value={horse.color} />
+          <DisplayField label="Boarding date" value={horse.boarding_date} />
+        </div>
+      </div>
+
+      <div className="horse-card-facts">
+        <div>Stall: {horse.stall_number || '—'}</div>
+        <div>Hay: {horse.hay || '—'} &nbsp; Grain: {horse.grain || '—'}</div>
+        <div>Pasture: {horse.pasture || '—'} &nbsp; Turnout: {horse.turnout || '—'}</div>
+      </div>
+
+      <div className="print-grid">
+        <DisplayField label="Supplements" value={horse.supplements} />
+        <DisplayField label="Medications" value={horse.medications} />
+        <DisplayField label="Veterinarian" value={showStructured(horse.vet_info)} />
+        <DisplayField label="Farrier" value={showStructured(horse.farrier_info)} />
+        <DisplayField label="Emergency contact" value={showStructured(horse.emergency_contacts)} />
+        <DisplayField label="Photo permission" value={horse.photo_permission ? 'Yes' : 'No'} />
+      </div>
+      <div className="print-notes">
+        <DisplayField label="Behavior & handling notes" value={horse.behavior_notes} />
+        <DisplayField label="Short intro story" value={horse.intro_story} />
+      </div>
+
+      <MedicalRecords horse={horse} userId={horse.owner_id} canUpload={true} />
     </div>
   )
 }

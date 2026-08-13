@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 
 const BARN_FIELDS = [
+  ['boarding_date', 'Boarding date'],
   ['stall_number', 'Stall number'],
   ['hay', 'Hay'],
   ['grain', 'Grain'],
@@ -9,7 +10,7 @@ const BARN_FIELDS = [
   ['turnout', 'Turnout'],
 ]
 
-export default function NewBoardedHorses({ refreshSignal }) {
+export default function NewBoardedHorses({ refreshSignal, onSaved }) {
   const [horses, setHorses] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -32,12 +33,12 @@ export default function NewBoardedHorses({ refreshSignal }) {
   return (
     <div className="card">
       <h3>New boarded horses</h3>
-      <p className="text-muted">Horses waiting for barn setup (stall, feeding, pasture, turnout).</p>
+      <p className="text-muted">Horses waiting for barn setup (Boarding date, stall, feeding, pasture, turnout).</p>
 
       {horses.length === 0 ? (
         <p className="text-muted">All caught up — no horses waiting for setup.</p>
       ) : (
-        horses.map((horse) => <BarnSetupRow key={horse.id} horse={horse} onDone={load} />)
+        horses.map((horse) => <BarnSetupRow key={horse.id} horse={horse} onDone={onSaved} />)
       )}
     </div>
   )
@@ -73,7 +74,11 @@ function BarnSetupRow({ horse, onDone }) {
       {BARN_FIELDS.map(([field, labelText]) => (
         <div key={field}>
           <label className="field-label">{labelText}</label>
-          <input value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
+          <input
+            type={field === 'boarding_date' ? 'date' : 'text'}
+            value={form[field] || ''}
+            onChange={(e) => update(field, e.target.value)}
+          />
         </div>
       ))}
       <div className="horse-card-actions">
