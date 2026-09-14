@@ -17,8 +17,8 @@ const SIMPLE_FIELDS = [
 // Structured fields: stored combined into one column, but entered as sub-parts.
 // [key, label, [subfields], required]
 const STRUCTURED_FIELDS = [
-  ['vet_info', 'Veterinarian', ['name', 'address', 'phone'], true],
-  ['farrier_info', 'Farrier', ['name', 'address', 'phone'], true],
+  ['vet_info', 'Veterinarian', ['name', 'phone'], true],
+  ['farrier_info', 'Farrier', ['name', 'phone'], true],
   ['emergency_contacts', 'Emergency contact', ['name', 'relationship', 'phone'], true],
 ]
 

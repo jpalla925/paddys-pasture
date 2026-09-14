@@ -45,7 +45,7 @@ export default function HorsePrintPage() {
 
       {/* The sheet */}
       <div className="print-header">
-        <h1>{horse.name} <span className="print-title-owner">{owner}</span> {horse.owner?.phone}</h1>
+        <h1>{horse.name}</h1>
       </div>
 
       <div className="print-top-row">
