@@ -1,5 +1,6 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { sendEmail } from '../_shared/email.ts'
+import { appUrl } from '../_shared/config.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -61,7 +62,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: profileError.message }), { status: 400, headers: corsHeaders })
     }
     
-    const loginUrl = 'https://paddyspasture.netlify.app'
+    const loginUrl = appUrl()
     const emailHtml = `
       <div style="font-family: sans-serif; color: #22302a; max-width: 500px;">
         <h2 style="color: #2F4A3D;">Welcome to Paddy's Pastures</h2>
