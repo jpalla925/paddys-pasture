@@ -11,6 +11,8 @@ import HorsePrintPage from './HorsePrintPage'
 import AddPersonForm from './AddPersonForm'
 import ChangePassword from './ChangePassword'
 import TreatmentChecklist from './TreatmentChecklist'
+import SmsTerms from './SmsTerms'
+import Privacy from './Privacy'
 
 function MainApp({ session, profile, refreshKey, setRefreshKey }) {
   const isAdmin = profile?.role === 'admin'
@@ -46,11 +48,12 @@ function MainApp({ session, profile, refreshKey, setRefreshKey }) {
   )
 }
 
-function App() {
+// Wraps the private side of the app. Everything inside requires a session
+// and a completed first-login setup. Public routes bypass this entirely.
+function RequireAuth({ children }) {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -71,7 +74,7 @@ function App() {
 
   if (loading) return <p className="page-loading">Loading...</p>
   if (!session) return <Auth />
-  
+
   // Force temp-password users to set a real one before anything else
   if (profile?.must_change_password) {
     return (
@@ -83,10 +86,34 @@ function App() {
     )
   }
 
+  return children({ session, profile })
+}
+
+function App() {
+  const [refreshKey, setRefreshKey] = useState(0)
+
   return (
     <Routes>
-      <Route path="/horse/:horseId/print" element={<HorsePrintPage />} />
-      <Route path="*" element={<MainApp session={session} profile={profile} refreshKey={refreshKey} setRefreshKey={setRefreshKey} />} />
+      {/* Public — no session required. Carriers and reviewers must reach these. */}
+      <Route path="/sms-terms" element={<SmsTerms />} />
+      <Route path="/privacy" element={<Privacy />} />
+
+      {/* Private */}
+      <Route path="/horse/:horseId/print" element={
+        <RequireAuth>{() => <HorsePrintPage />}</RequireAuth>
+      } />
+      <Route path="*" element={
+        <RequireAuth>
+          {({ session, profile }) => (
+            <MainApp
+              session={session}
+              profile={profile}
+              refreshKey={refreshKey}
+              setRefreshKey={setRefreshKey}
+            />
+          )}
+        </RequireAuth>
+      } />
     </Routes>
   )
 }

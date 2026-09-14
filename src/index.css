@@ -176,6 +176,41 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 2px;
   color: var(--forest);
 }
+/* Checkbox + fine-print consent (e.g. SMS opt-in) */
+.consent-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+  cursor: pointer;
+}
+.consent-row:has(input:checked) {
+  border-color: var(--forest);
+  background: rgba(47, 74, 61, 0.04);
+}
+.consent-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin: 1px 0 0;
+  padding: 0;
+  accent-color: var(--forest);
+  cursor: pointer;
+}
+.consent-row input[type="checkbox"]:focus-visible {
+  box-shadow: 0 0 0 2px rgba(47,74,61,0.25);
+}
+.consent-row a {
+  color: var(--forest);
+  text-decoration: underline;
+}
 .search-input {
   max-width: 420px;
   margin-bottom: 16px;
@@ -527,3 +562,51 @@ input:focus, select:focus, textarea:focus {
   display: block;
   margin-bottom: 8px;
 }
+
+/* Public legal pages (Privacy, SMS Terms) */
+.legal-page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 20px 56px;
+}
+.legal-header {
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+  border-bottom: 1px solid var(--border);
+}
+.legal-header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+.legal-body {
+  font-size: 16px;
+  line-height: 1.75;
+}
+.legal-body h2 {
+  font-size: 30px;
+  margin: 0 0 24px;
+}
+.legal-body h3 {
+  font-size: 19px;
+  margin: 32px 0 8px;
+}
+.legal-body p { margin: 0 0 14px; }
+.legal-body a { color: var(--forest); }
+.legal-body a:hover { color: var(--saddle); }
+.legal-body .legal-updated {
+  margin-top: 36px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.legal-footer {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 14px;
+}
+.legal-footer a {
+  color: var(--forest);
+  font-weight: 600;
+  text-decoration: none;
+}
+.legal-footer a:hover { text-decoration: underline; }

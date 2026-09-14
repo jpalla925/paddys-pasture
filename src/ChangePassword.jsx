@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from './supabaseClient'
+import { SMS_CONSENT_VERSION } from './smsConsent'
 
 export default function ChangePassword({ userId, role, onDone }) {
   const [firstName, setFirstName] = useState('')
@@ -14,6 +15,7 @@ export default function ChangePassword({ userId, role, onDone }) {
   const [paymentPref, setPaymentPref] = useState('')
   const [zelleAccount, setZelleAccount] = useState('')
   const [otherHeardAbout, setOtherHeardAbout] = useState('')
+  const [smsOptIn, setSmsOptIn] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -54,6 +56,8 @@ export default function ChangePassword({ userId, role, onDone }) {
         heard_about_other: heardAbout === 'Other' ? (otherHeardAbout.trim() || null) : null,
         payment_preference: paymentPref || null,
         zelle_account: paymentPref === 'Zelle' ? (zelleAccount.trim() || null) : null,
+        sms_opt_in_at: smsOptIn ? new Date().toISOString() : null,
+        sms_consent_version: smsOptIn ? SMS_CONSENT_VERSION : null,
         must_change_password: false
       })
     .eq('id', userId)
@@ -132,6 +136,23 @@ export default function ChangePassword({ userId, role, onDone }) {
             )}
           </>
         )}
+
+        <label className="consent-row">
+          <input
+            type="checkbox"
+            checked={smsOptIn}
+            onChange={(e) => setSmsOptIn(e.target.checked)}
+          />
+          <span>
+            Text me barn notifications. By checking this box you agree to receive SMS
+            messages from Paddy's Pastures about boarder messages and horse care at the
+            barn. Message frequency varies. Message and data rates may apply. Reply STOP
+            to opt out or HELP for help. See our{' '}
+            <a href="/sms-terms" target="_blank" rel="noopener noreferrer">SMS Terms</a>
+            {' '}and{' '}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+          </span>
+        </label>
         
         <input type="password" placeholder="New password" value={password}
           onChange={(e) => setPassword(e.target.value)} required 
