@@ -33,6 +33,10 @@ export default function Auth() {
         </form>
 
         {message && <p className="form-error">{message}</p>}
+
+        <p className="login-legal">
+          <a href="/sms-terms">SMS Terms</a> · <a href="/privacy">Privacy Policy</a>
+        </p>
       </div>
     </div>
   )

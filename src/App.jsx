@@ -11,8 +11,6 @@ import HorsePrintPage from './HorsePrintPage'
 import AddPersonForm from './AddPersonForm'
 import ChangePassword from './ChangePassword'
 import TreatmentChecklist from './TreatmentChecklist'
-import SmsTerms from './SmsTerms'
-import Privacy from './Privacy'
 
 function MainApp({ session, profile, refreshKey, setRefreshKey }) {
   const isAdmin = profile?.role === 'admin'
@@ -95,8 +93,6 @@ function App() {
   return (
     <Routes>
       {/* Public — no session required. Carriers and reviewers must reach these. */}
-      <Route path="/sms-terms" element={<SmsTerms />} />
-      <Route path="/privacy" element={<Privacy />} />
 
       {/* Private */}
       <Route path="/horse/:horseId/print" element={
