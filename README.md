@@ -2,7 +2,7 @@
 
 A full-stack horse boarding management application built for a working horse barn to replace manual processes for horse care, boarder onboarding, and barn–owner communication.
 
-**Live app:** https://paddyspasture.netlify.app/
+**Live app:** https://app.paddyspastures.com
 **Status:** In production, actively used by a Florida horse boarding facility
 
 ---
@@ -29,7 +29,7 @@ The app supports three types of users, each with distinct permissions enforced a
 - **Daily treatment checklist** — staff track daily care tasks per horse (done / N/A), with dated history and a "notify owner" email
 - **File uploads** — horse photos (public) and medical records (private, access-controlled via signed URLs) through Supabase Storage
 - **Printable horse info sheets** — clean, print-optimized per-horse care sheets for barn staff
-- **Email & SMS notifications** — "in production" transactional email (Resend) and one-way SMS (Twilio) for barn communications
+- **Email & SMS notifications** — "in production" transactional email (Resend) and two-way SMS (Twilio) for barn communications
 
 ---
 
@@ -41,7 +41,7 @@ The app supports three types of users, each with distinct permissions enforced a
 
 **Backend / Infrastructure**
 - Supabase — PostgreSQL, Auth, Row Level Security, Edge Functions (Deno/TypeScript), Storage, Realtime
-- Netlify — hosting & continuous deployment
+- Netlify — hosting & continuous deployment, custom domain with SPA routing
 - Resend — transactional email
 - Twilio — SMS notifications
 
@@ -70,6 +70,24 @@ The two-stage horse profile (boarders provide their information; admins provide 
 ### Server-side operations via Edge Functions
 
 Privileged actions — admin account creation, sending email/SMS — run in Supabase Edge Functions where secrets stay server-side and are never exposed to the browser.
+
+### Consent that can't drift from its audit trail
+
+SMS consent is stored as two timestamps — when the user opted in, and when
+they opted out — along with the version of the terms they agreed to. The
+boolean the app actually reads is a Postgres generated column derived from
+those timestamps:
+
+    receives_sms boolean generated always as (
+      sms_opt_in_at is not null
+      and (sms_opt_out_at is null or sms_opt_out_at < sms_opt_in_at)
+    ) stored
+
+Postgres rejects any attempt to write that column directly. There is no code
+path, in the app or in a migration, that can flip someone's SMS status
+without leaving a dated record of why. Carrier regulations require proof of
+consent; this makes that proof a structural property of the schema rather
+than something the application has to remember to maintain.
 
 ---
 
