@@ -94,6 +94,24 @@ export default function ChangePassword({ userId, role, onDone }) {
         <input type="tel" placeholder="Phone number" value={phone}
           onChange={(e) => setPhone(e.target.value)} required 
           autoComplete="tel" />
+
+        <label className="consent-row">
+          <input
+            type="checkbox"
+            checked={smsOptIn}
+            onChange={(e) => setSmsOptIn(e.target.checked)}
+          />
+          <span>
+            Text me barn notifications. By checking this box you agree to receive SMS
+            messages from Paddy's Pastures about boarder messages and horse care at the
+            barn. Message frequency varies. Message and data rates may apply. Reply STOP
+            to opt out or HELP for help. See our{' '}
+            <a href="/sms-terms" target="_blank" rel="noopener noreferrer">SMS Terms</a>
+            {' '}and{' '}
+            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+          </span>
+        </label>
+
         <input type="text" placeholder="Mailing Address" value={address}
           onChange={(e) => setAddress(e.target.value)} 
           autoComplete="street-address" />
@@ -136,23 +154,6 @@ export default function ChangePassword({ userId, role, onDone }) {
             )}
           </>
         )}
-
-        <label className="consent-row">
-          <input
-            type="checkbox"
-            checked={smsOptIn}
-            onChange={(e) => setSmsOptIn(e.target.checked)}
-          />
-          <span>
-            Text me barn notifications. By checking this box you agree to receive SMS
-            messages from Paddy's Pastures about boarder messages and horse care at the
-            barn. Message frequency varies. Message and data rates may apply. Reply STOP
-            to opt out or HELP for help. See our{' '}
-            <a href="/sms-terms" target="_blank" rel="noopener noreferrer">SMS Terms</a>
-            {' '}and{' '}
-            <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
-          </span>
-        </label>
         
         <input type="password" placeholder="New password" value={password}
           onChange={(e) => setPassword(e.target.value)} required 
