@@ -91,7 +91,7 @@ export default function ChangePassword({ userId, role, onDone }) {
         <input type="text" placeholder="Last name" value={lastName}
           onChange={(e) => setLastName(e.target.value)} required 
           autoComplete="family-name" />
-        <input type="tel" placeholder="Mobile Phone number" value={phone}
+        <input type="tel" placeholder="Mobile phone number" value={phone}
           onChange={(e) => setPhone(e.target.value)} required 
           autoComplete="tel" />
 
