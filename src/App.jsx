@@ -92,7 +92,7 @@ function App() {
 
   return (
     <Routes>
-      {/* Public — no session required. Carriers and reviewers must reach these. */}
+      {/* Public pages live in public/ */}
 
       {/* Private */}
       <Route path="/horse/:horseId/print" element={
