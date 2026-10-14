@@ -3,69 +3,250 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>About — Paddy's Pastures</title>
-<meta name="description" content="About Paddy's Pastures horse boarding facility and its SMS notification program.">
+<title>Paddy's Pastures — Horse Boarding in Sarasota, FL</title>
+<meta name="description" content="Paddy's Pastures is a horse boarding facility in Sarasota, Florida offering full board and pasture board, with stalls, riding arenas, and fenced pasture.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Mulish:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  :root { --forest: #2F4A3D; --ink: #22302a; --cream: #FAF7F0; }
-  body { margin: 0; padding: 2rem 1.25rem 4rem; background: var(--cream);
-         color: var(--ink); font-family: system-ui, -apple-system, sans-serif;
+  :root {
+    --forest: #2F4A3D; --saddle: #8A5A34; --cream: #fbf9f5; --tan: #e7e2d6;
+    --border: #d8d2c4; --text: #22302a; --muted: #6b7a70;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--cream); color: var(--text);
+         font-family: 'Mulish', -apple-system, BlinkMacSystemFont, sans-serif;
          line-height: 1.65; }
-  .wrap { max-width: 700px; margin: 0 auto; }
-  h1 { color: var(--forest); font-size: 1.5rem; margin: 0 0 .25rem; }
-  h2 { font-size: 1.25rem; margin: 0 0 2rem; font-weight: 500; }
-  h3 { color: var(--forest); font-size: 1rem; margin: 2rem 0 .4rem; }
+  h1, h2, h3 { font-family: 'Fraunces', Georgia, serif; color: var(--forest);
+               font-weight: 600; line-height: 1.2; }
   a { color: var(--forest); }
+  img { display: block; max-width: 100%; }
+
+  /* Header */
+  .site-header { position: sticky; top: 0; z-index: 10; background: rgba(251,249,245,.95);
+                 border-bottom: 1px solid var(--border); }
+  .site-header .inner { max-width: 1000px; margin: 0 auto; padding: 12px 16px;
+                        display: flex; flex-wrap: wrap; align-items: center;
+                        justify-content: space-between; gap: 8px 20px; }
+  .wordmark { font-family: 'Fraunces', Georgia, serif; font-size: 1.35rem;
+              color: var(--forest); text-decoration: none; font-weight: 600; }
+  .site-nav { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .95rem; }
+  .site-nav a { text-decoration: none; color: var(--text); }
+  .site-nav a:hover { color: var(--forest); text-decoration: underline; }
+
+  /* Hero */
+  .hero { position: relative; }
+  .hero img { width: 100%; height: min(70vh, 560px); object-fit: cover; }
+  .hero-text { position: absolute; left: 0; right: 0; bottom: 0; padding: 48px 16px 28px;
+               background: linear-gradient(transparent, rgba(20,32,26,.75)); color: #fff; }
+  .hero-text .inner { max-width: 1000px; margin: 0 auto; }
+  .hero-text h1 { color: #fff; font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 .3rem; }
+  .hero-text p { margin: 0; font-size: 1.1rem; max-width: 560px; }
+
+  /* Sections */
+  main section { max-width: 1000px; margin: 0 auto; padding: 48px 16px 8px; }
+  main section > h2 { font-size: 1.75rem; margin: 0 0 1rem; }
+  main section h3 { font-size: 1.15rem; margin: 1.5rem 0 .4rem; }
+  .lede { font-size: 1.1rem; max-width: 680px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .card h3 { margin-top: 0; }
+  .card ul { margin: 0; padding-left: 1.2rem; }
+  .note { color: var(--muted); font-size: .95rem; margin-top: 1rem; }
+
+  .facility-list { columns: 2 240px; padding-left: 1.2rem; margin: 0; }
+  .facility-list li { margin-bottom: .35rem; break-inside: avoid; }
+
+  .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .gallery figure { margin: 0; }
+  .gallery img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 8px; }
+  .gallery figcaption { font-size: .9rem; color: var(--muted); margin-top: .35rem; }
+
+  .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  address { font-style: normal; }
+
   blockquote { margin: 1rem 0; padding: .75rem 1rem; background: #fff;
-               border-left: 3px solid var(--forest); }
-  figure { margin: 1rem 0; }
-  figure img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 6px; }
-  figcaption { font-size: .9rem; opacity: .75; margin-top: .4rem; }
-  .updated { margin-top: 2.5rem; font-size: .9rem; opacity: .75; }
-  footer { margin-top: 2.5rem; padding-top: 1.25rem; border-top: 1px solid #ddd; font-size: .9rem; }
+               border-left: 3px solid var(--forest); border-radius: 0 6px 6px 0; }
+  .optin-shot { margin: 1rem auto; max-width: 340px; background: #fff; padding: 12px;
+                border: 1px solid var(--border); border-radius: 12px;
+                box-shadow: 0 8px 30px rgba(47, 74, 61, 0.12); }
+  .optin-shot img { width: 100%; height: auto; border-radius: 6px; }
+  .optin-shot figcaption { font-size: .9rem; color: var(--muted); margin-top: .6rem; text-align: center; }
+  .optin-text > p:first-child { margin-top: 0; }
+  @media (min-width: 760px) {
+    .optin-layout { display: grid; grid-template-columns: 1fr 320px; gap: 40px; align-items: start; }
+    .optin-shot { margin: 0; position: sticky; top: 80px; }
+  }
+
+  /* Footer */
+  .site-footer { margin-top: 56px; background: var(--forest); color: #eef2ee; }
+  .site-footer .inner { max-width: 1000px; margin: 0 auto; padding: 28px 16px; font-size: .95rem; }
+  .site-footer a { color: #fff; }
+  .site-footer .name { font-family: 'Fraunces', Georgia, serif; font-size: 1.2rem; color: #fff; margin: 0 0 .4rem; }
+  .site-footer .updated { opacity: .75; font-size: .85rem; margin-top: 1rem; }
 </style>
 </head>
 <body>
-<div class="wrap">
-<h1>Paddy's Pastures</h1>
-<h2>About us</h2>
 
-<h3>Who we are</h3>
-<p>Paddy's Pastures is a horse boarding facility in Sarasota, Florida, owned and operated by Kevin Dermody. Our legal business name is Kevin Dermody Paddys Pastures.</p>
+<header class="site-header">
+  <div class="inner">
+    <a class="wordmark" href="#top">Paddy's Pastures</a>
+    <nav class="site-nav" aria-label="Page sections">
+      <a href="#boarding">Boarding</a>
+      <a href="#facilities">Facilities</a>
+      <a href="#care">How it works</a>
+      <a href="#photos">Photos</a>
+      <a href="#contact">Contact</a>
+      <a href="#text-notifications">Text notifications</a>
+    </nav>
+  </div>
+</header>
 
-<h3>Our boarder portal</h3>
-<p>We run a private web portal at app.paddyspastures.com for our boarders, staff, and management. Boarders use it to keep their horse's profile and care details up to date and to message the barn. Staff use it to track each horse's daily care. Accounts are created by barn management for people who board or work with us; there is no public sign-up.</p>
+<main id="top">
+  <div class="hero">
+    <img src="/about/images/barn-rainbow.jpg" width="1600" height="1200"
+         alt="The main barn and fenced pasture at Paddy's Pastures under a double rainbow">
+    <div class="hero-text">
+      <div class="inner">
+        <h1>Paddy's Pastures</h1>
+        <p>Horse boarding in Sarasota, Florida</p>
+      </div>
+    </div>
+  </div>
 
-<h3>Text message notifications</h3>
-<p>Paddy's Pastures sends text messages to people who have opted in:</p>
-<ul>
-  <li>Staff and management receive an alert when a boarder sends a message through the portal. Each alert names the boarder and includes a link to view and respond to the message.</li>
-  <li>Boarders may receive notifications about their horse's care and messages from the barn.</li>
-</ul>
-<p>We do not send marketing or promotional texts. Message frequency varies based on activity at the barn. Msg &amp; data rates may apply. Reply STOP to any message to opt out, or HELP for help. Full details are in our <a href="/sms-terms">SMS Terms</a>.</p>
+  <section id="about">
+    <h2>About us</h2>
+    <p class="lede">Paddy's Pastures is a horse boarding facility in Sarasota, Florida, owned and operated by Kevin Dermody. We offer stall and pasture boarding on a property with fenced pasture, a stall barn, and riding arenas, with a focus on attentive daily care and clear communication with every owner.</p>
+    <p>Our legal business name is Kevin Dermody Paddys Pastures.</p>
+  </section>
 
-<h3>How people opt in</h3>
-<p>Text notifications are optional and are never a condition of boarding with us or using the portal. When someone first signs in to set up their account, they enter their mobile phone number, and the consent checkbox sits directly below that field. It is unchecked by default, and we only text people who check it. The checkbox reads:</p>
-<blockquote>Text me barn notifications. By checking this box you agree to receive SMS messages from Paddy's Pastures about boarder messages and horse care at the barn. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. See our SMS Terms and Privacy Policy.</blockquote>
-<figure>
-  <img src="/about/sms-opt-in.png" alt="Screenshot of the account setup form in the Paddy's Pastures portal, showing the mobile phone number field with the unchecked SMS consent checkbox directly below it.">
-  <figcaption>The account setup screen where people choose whether to receive texts.</figcaption>
-</figure>
-<p>We record the date and time each person opts in or out, along with the version of the SMS Terms they agreed to.</p>
+  <section id="boarding">
+    <h2>Boarding options</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Full board</h3>
+        <ul>
+          <li>Stall</li>
+          <li>Daily feeding</li>
+          <li>Turnout</li>
+          <li>Stall cleaning</li>
+          <li>Health checks</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Pasture board</h3>
+        <ul>
+          <li>24/7 turnout with shelter</li>
+          <li>Daily feeding</li>
+          <li>Health checks</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">Pricing is available on request. Call (941) 442-5648 or email <a href="mailto:Howdy@paddyspastures.com">Howdy@paddyspastures.com</a> for current rates and availability.</p>
+  </section>
 
-<h3>Example messages</h3>
-<blockquote>Paddy's Pastures: New message from Jane Smith. View and reply: https://app.paddyspastures.com/r/abc123 Reply STOP to opt out.</blockquote>
-<blockquote>Paddy's Pastures: Bella's daily care is done for today. Questions? Call (941) 442-5648. Reply STOP to opt out.</blockquote>
+  <section id="facilities">
+    <h2>Facilities</h2>
+    <ul class="facility-list">
+      <li>Fenced pasture</li>
+      <li>A stall barn with more than a dozen stalls</li>
+      <li>Fans in the stalls</li>
+      <li>Riding arenas</li>
+      <li>Wash rack</li>
+    </ul>
+  </section>
 
-<h3>Your privacy</h3>
-<p>No mobile information will be shared with third parties or affiliates for marketing or promotional purposes. See our <a href="/privacy">Privacy Policy</a> for how we handle your information.</p>
+  <section id="care">
+    <h2>How boarding works</h2>
+    <p>Every horse receives daily care from our barn staff, including feeding, turnout, and stall cleaning for horses on full board. Each horse's care plan and treatments are tracked in our barn management system, so nothing is missed.</p>
+    <p>We keep each horse's medical records and care details on file. Boarders use our private online portal to keep their horse's profile up to date and to message the barn directly, and they can choose to receive text notifications.</p>
+  </section>
 
-<h3>Contact us</h3>
-<p>Phone: (941) 442-5648<br>
-Email: <a href="mailto:Howdy@paddyspastures.com">Howdy@paddyspastures.com</a><br>
-Location: Sarasota, Florida</p>
+  <section id="photos">
+    <h2>Around the barn</h2>
+    <div class="gallery">
+      <figure>
+        <img src="/about/images/pasture.jpg" width="1103" height="723" loading="lazy"
+             alt="A chestnut horse grazing in a fenced pasture beside a pond">
+        <figcaption>Pasture turnout</figcaption>
+      </figure>
+      <figure>
+        <img src="/about/images/stall.jpg" width="1200" height="1600" loading="lazy"
+             alt="A chestnut horse with a white blaze looking over its stall door in the barn">
+        <figcaption>In the stall barn</figcaption>
+      </figure>
+      <figure>
+        <img src="/about/images/donkeys.jpg" width="1600" height="1205" loading="lazy"
+             alt="Two donkeys grazing on the lawn beside a large painted rooster statue">
+        <figcaption>Around the property</figcaption>
+      </figure>
+    </div>
+  </section>
 
-<p class="updated">Last updated: 2026-10-06</p>
-<footer><a href="/">Sign in to the portal</a> &middot; <a href="/privacy">Privacy Policy</a> &middot; <a href="/sms-terms">SMS Terms</a></footer>
-</div>
+  <section id="contact">
+    <h2>Contact us</h2>
+    <div class="contact-grid">
+      <div>
+        <h3>Address</h3>
+        <address>9219 Delft Road<br>Sarasota, FL 34240</address>
+      </div>
+      <div>
+        <h3>Phone</h3>
+        <p><a href="tel:+19414425648">(941) 442-5648</a></p>
+      </div>
+      <div>
+        <h3>Email</h3>
+        <p><a href="mailto:Howdy@paddyspastures.com">Howdy@paddyspastures.com</a></p>
+      </div>
+    </div>
+    <p>Interested in boarding with us? Call or email to ask about availability and to schedule a visit.</p>
+  </section>
+
+  <section id="text-notifications">
+    <h2>Text message notifications</h2>
+    <p>Paddy's Pastures sends text messages to people who have opted in:</p>
+    <ul>
+      <li>Staff and management receive an alert when a boarder sends a message through the portal. Each alert names the boarder and includes a link to view and respond to the message.</li>
+      <li>Boarders may receive notifications about their horse's care and messages from the barn.</li>
+    </ul>
+    <p>We do not send marketing or promotional texts. Message frequency varies based on activity at the barn. Msg &amp; data rates may apply. Reply STOP to any message to opt out, or HELP for help. Full details are in our <a href="/sms-terms">SMS Terms</a>.</p>
+
+    <h3>How people opt in</h3>
+    <div class="optin-layout">
+    <div class="optin-text">
+    <p>Text notifications are optional and are never a condition of boarding with us or using the portal. Portal accounts are created by barn management for people who board or work with us; there is no public sign-up. When someone first signs in to set up their account, they enter their mobile phone number, and the consent checkbox sits directly below that field. It is unchecked by default, and we only text people who check it. The checkbox reads:</p>
+    <blockquote>Text me barn notifications. By checking this box you agree to receive SMS messages from Paddy's Pastures about boarder messages and horse care at the barn. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. See our SMS Terms and Privacy Policy.</blockquote>
+    <p>We record the date and time each person opts in or out, along with the version of the SMS Terms they agreed to.</p>
+    </div>
+    <figure class="optin-shot">
+      <img src="/about/sms-opt-in.png" loading="lazy"
+           alt="Screenshot of the account setup form in the Paddy's Pastures portal, showing the mobile phone number field with the unchecked SMS consent checkbox directly below it.">
+      <figcaption>The account setup screen where people choose whether to receive texts.</figcaption>
+    </figure>
+    </div>
+
+    <h3>Example messages</h3>
+    <blockquote>Paddy's Pastures: New message from Jane Smith. View and reply: https://app.paddyspastures.com/r/abc123 Reply STOP to opt out.</blockquote>
+    <blockquote>Paddy's Pastures: Bella's daily care is done for today. Questions? Call (941) 442-5648. Reply STOP to opt out.</blockquote>
+    <blockquote>Paddy's Pastures: You have a new message from the barn about Bella. View it here: https://app.paddyspastures.com Reply STOP to opt out.</blockquote>
+
+    <h3>Your privacy</h3>
+    <p>No mobile information will be shared with third parties or affiliates for marketing or promotional purposes. See our <a href="/privacy">Privacy Policy</a> for how we handle your information.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="inner">
+    <p class="name">Paddy's Pastures</p>
+    <address>9219 Delft Road, Sarasota, FL 34240<br>
+      <a href="tel:+19414425648">(941) 442-5648</a> &middot; <a href="mailto:Howdy@paddyspastures.com">Howdy@paddyspastures.com</a></address>
+    <p><a href="/">Boarder portal sign-in</a> &middot; <a href="/privacy">Privacy Policy</a> &middot; <a href="/sms-terms">SMS Terms</a></p>
+    <p class="updated">Last updated: 2026-10-14</p>
+  </div>
+</footer>
+
 </body>
 </html>
