@@ -2,6 +2,17 @@
   command = "npm run build"
   publish = "dist"
 
+# Reply-link pages carry a credential in the URL (/r/<token>):
+#   no-referrer  -> the browser never sends this URL to another site
+#   noindex      -> search engines won't index it if a link leaks
+#   no-store     -> no shared/proxy cache keeps the page
+[[headers]]
+  for = "/r/*"
+  [headers.values]
+    Referrer-Policy = "no-referrer"
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-store"
+
 # SPA fallback: let React Router handle any path that isn't a real file.
 # Must stay last — Netlify applies the first matching rule.
 [[redirects]]

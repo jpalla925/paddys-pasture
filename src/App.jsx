@@ -11,6 +11,7 @@ import HorsePrintPage from './HorsePrintPage'
 import AddPersonForm from './AddPersonForm'
 import ChangePassword from './ChangePassword'
 import TreatmentChecklist from './TreatmentChecklist'
+import ReplyByLink from './ReplyByLink'
 
 function MainApp({ session, profile, refreshKey, setRefreshKey }) {
   const isAdmin = profile?.role === 'admin'
@@ -92,7 +93,11 @@ function App() {
 
   return (
     <Routes>
-      {/* Public pages live in public/ */}
+      {/* Public. Static pages (/about, /privacy, /sms-terms) live in public/.
+          React's public routes go here, ABOVE the catch-all, outside RequireAuth.
+          /r/:token is secured by the token itself: every read and write goes
+          through thread_via_token() / reply_via_token() in the database. */}
+      <Route path="/r/:token" element={<ReplyByLink />} />
 
       {/* Private */}
       <Route path="/horse/:horseId/print" element={
