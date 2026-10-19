@@ -16,9 +16,6 @@ import { appUrl } from '../_shared/config.ts'
 // change it later, when they own the infrastructure, without a code change.
 const NOTIFY_TO = Deno.env.get('NOTIFY_TO') ?? 'howdy@paddyspastures.com'
 
-// The app, so the email can link straight back in.
-const APP_URL = '${appUrl()}';
-
 Deno.serve(async (req) => {
   // Only the database should be POSTing here.
   if (req.method !== 'POST') {
@@ -89,7 +86,7 @@ Deno.serve(async (req) => {
         </p>
         <p>It's now waiting in the <em>new boarded horses</em> queue for the
         barn-side details (stall, hay, grain, pasture, turnout).</p>
-        <p><a href="${APP_URL}" style="color: #2F4A3D;">Open Paddy's Pastures</a></p>
+        <p><a href="${appUrl()}" style="color: #2F4A3D;">Open Paddy's Pastures</a></p>
       </div>
     `
 
