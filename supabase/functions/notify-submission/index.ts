@@ -9,6 +9,7 @@
 
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { sendEmail } from '../_shared/email.ts'
+import { appUrl } from '../_shared/config.ts'
 
 // Where the notification goes. This isn't a secret (it's already the reply-to
 // in _shared/email.ts) — we read it from the environment only so the barn can
@@ -16,7 +17,7 @@ import { sendEmail } from '../_shared/email.ts'
 const NOTIFY_TO = Deno.env.get('NOTIFY_TO') ?? 'howdy@paddyspastures.com'
 
 // The app, so the email can link straight back in.
-const APP_URL = 'https://paddyspasture.netlify.app'
+const APP_URL = '${appUrl()}';
 
 Deno.serve(async (req) => {
   // Only the database should be POSTing here.
