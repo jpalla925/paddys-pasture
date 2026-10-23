@@ -51,6 +51,24 @@ const OPT_IN_CONFIRMATION =
   "You're subscribed to barn notifications. Msg frequency varies. " +
   'Msg & data rates may apply. Reply HELP for help, STOP to opt out.'
 
+// Opt-out keywords, registered with the A2P campaign. MUST match the
+// Messaging Service's Opt-out tab: Twilio uses that tab to block the number
+// and send the "unsubscribed" reply; sms-inbound uses this list to record the
+// opt-out in our database. Change one, change the other.
+//
+// Why a copy at all: Twilio's OptOutType webhook field is supposed to carry
+// this, but it was missing in live testing (Oct 23, 2026), so sms-inbound
+// can't rely on it alone.
+export const OPT_OUT_KEYWORDS: ReadonlySet<string> = new Set([
+  'CANCEL', 'END', 'OPTOUT', 'QUIT', 'REVOKE', 'STOP', 'STOPALL', 'UNSUBSCRIBE',
+])
+
+// Same rule Twilio applies: the WHOLE body must be the keyword, any case,
+// surrounding whitespace ignored. "stop please" is not an opt-out.
+export function isOptOutKeyword(body: string | null): boolean {
+  return OPT_OUT_KEYWORDS.has((body ?? '').trim().toUpperCase())
+}
+
 // Phones are stored as 10 bare digits (ChangePassword.jsx enforces that).
 // Twilio wants E.164 (+1XXXXXXXXXX). The stored digits stay the source of
 // truth; E.164 is derived here, at the one place that needs it.

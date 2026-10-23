@@ -12,6 +12,7 @@
 // signature (X-Twilio-Signature) instead of a login token or our webhook secret.
 
 import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { isOptOutKeyword } from '../_shared/sms.ts'
 
 // An empty TwiML reply = "don't send anything back". Advanced Opt-Out already
 // sent the auto-reply; a reply from us would be a second text.
@@ -100,21 +101,36 @@ Deno.serve(async (req) => {
     return new Response('Forbidden', { status: 403 })
   }
 
-  // 2. What kind of text is this? OptOutType is added by Advanced Opt-Out
-  //    when the body matches a keyword on the Messaging Service's Opt-out /
-  //    Opt-in / Help tabs, so that console list stays the single source of
-  //    truth for keywords. Ordinary texts have no OptOutType.
+  // 2. Is this an opt-out? Two signals, either one is enough:
+  //    * OptOutType = 'STOP', which Advanced Opt-Out is documented to add when
+  //      the body matches a keyword on the Opt-out tab;
+  //    * our own match against OPT_OUT_KEYWORDS (_shared/sms.ts), because in
+  //      live testing a plain "STOP" arrived with no OptOutType at all.
   const optOutType = params.get('OptOutType')        // 'STOP' | 'START' | 'HELP' | null
   const messageSid = params.get('MessageSid')
+  const isStop = optOutType === 'STOP' || isOptOutKeyword(params.get('Body'))
 
-  if (optOutType !== 'STOP') {
+  if (!isStop) {
     // START/HELP: Twilio already replied. Logged so we can see whether START
     // ever happens before deciding to record it (decided Oct 23, 2026).
     // Ordinary texts: nothing to do; the reply path is the link, not SMS.
     // The message body is deliberately not logged.
-    console.info('sms-inbound: no action', { optOutType: optOutType ?? 'none', messageSid })
+    console.info('sms-inbound: no action', {
+      optOutType: optOutType ?? 'none',
+      messageSid,
+      fieldNames: [...new Set(params.keys())].sort(),   // names only, see below
+    })
     return twiml()
   }
+
+  // Diagnostic: which signal fired, plus the NAMES of the fields Twilio sent
+  // (never values -- they include phone numbers and the message text). Shows
+  // whether OptOutType ever arrives. Safe to remove once that's settled.
+  console.info('sms-inbound: opt-out detected', {
+    messageSid,
+    viaOptOutType: optOutType === 'STOP',
+    fieldNames: [...new Set(params.keys())].sort(),
+  })
 
   // 3. Record the STOP on every profile with this phone number. STOP applies
   //    to a NUMBER, not an account, so two profiles sharing a phone both opt
