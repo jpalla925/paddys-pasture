@@ -29,7 +29,9 @@ The app supports three types of users, each with distinct permissions enforced a
 - **Daily treatment checklist** — staff track daily care tasks per horse (done / N/A), with dated history and a "notify owner" email
 - **File uploads** — horse photos (public) and medical records (private, access-controlled via signed URLs) through Supabase Storage
 - **Printable horse info sheets** — clean, print-optimized per-horse care sheets for barn staff
-- **Email & SMS notifications** — "in production" transactional email (Resend) and two-way SMS (Twilio) for barn communications
+- **Email notifications** — transactional email through Resend from the barn's own verified domain (e.g. the barn is emailed when a boarder submits a new horse)
+- **SMS notifications with no-login replies** — when a boarder messages the barn, opted-in admins get a text with a private reply link; tapping it opens the conversation and lets them answer without an account login, built for a barn owner who prefers texting to apps
+- **Carrier-compliant SMS consent** — registered A2P 10DLC brand and campaign, web opt-in with versioned terms, an opt-in confirmation text, and STOP replies recorded back into the database automatically
 
 ---
 
@@ -40,10 +42,10 @@ The app supports three types of users, each with distinct permissions enforced a
 - React Router
 
 **Backend / Infrastructure**
-- Supabase — PostgreSQL, Auth, Row Level Security, Edge Functions (Deno/TypeScript), Storage, Realtime
-- Netlify — hosting & continuous deployment, custom domain with SPA routing
+- Supabase — PostgreSQL, Auth, Row Level Security, Edge Functions (Deno/TypeScript), Storage, Realtime, pg_net (database-triggered webhooks), Vault (secrets the database needs)
+- Netlify — hosting & continuous deployment, custom domain with SPA routing, static public pages
 - Resend — transactional email
-- Twilio — SMS notifications
+- Twilio — SMS through a Messaging Service on a registered A2P 10DLC campaign, with Advanced Opt-Out
 
 **Tooling**
 - Supabase CLI for database migrations
@@ -71,6 +73,41 @@ The two-stage horse profile (boarders provide their information; admins provide 
 
 Privileged actions — admin account creation, sending email/SMS — run in Supabase Edge Functions where secrets stay server-side and are never exposed to the browser.
 
+### Notifications driven by the database, not the UI
+
+Notifications fire from database triggers rather than from React code, so they
+happen no matter which screen (or future screen) causes the change. An
+`AFTER INSERT`/`UPDATE` trigger queues an HTTP call with `pg_net`; the call is
+only sent after the transaction commits, so a rolled-back change never sends a
+text or email, and a slow provider never makes the user wait. The Edge
+Function on the other end checks a shared secret that the database reads from
+Supabase Vault, so the secret never appears in this public repo.
+
+All outbound SMS goes through one helper (`supabase/functions/_shared/sms.ts`)
+that re-checks consent from the database, adds the required business prefix
+and opt-out language, sends, and writes an audit row. Its argument types make
+it a compile-time error to send the opt-in confirmation with custom wording or
+a notification without a message.
+
+### Replying by link without a login
+
+A text can't carry a session, so each SMS includes a single-purpose reply
+link instead. The token is 32 random bytes; only its SHA-256 hash is stored,
+so a leaked database or backup contains no working links. Each token is scoped
+to one recipient and one conversation and expires after 72 hours. The public
+`/r/:token` page talks to the database only through two `SECURITY DEFINER`
+functions that validate the token before reading the thread or posting a
+reply — the token tables themselves have row-level security on with no
+policies, and all API privileges revoked.
+
+### Verifying inbound webhooks
+
+Twilio calls a public endpoint when someone texts the barn's number. Rather
+than trusting the request, the Edge Function recomputes Twilio's HMAC-SHA1
+request signature (over the exact public URL plus the sorted form fields) and
+compares it in constant time before reading anything in the body. A forged or
+altered request is rejected with a 403.
+
 ### Consent that can't drift from its audit trail
 
 SMS consent is stored as two timestamps — when the user opted in, and when
@@ -89,9 +126,37 @@ without leaving a dated record of why. Carrier regulations require proof of
 consent; this makes that proof a structural property of the schema rather
 than something the application has to remember to maintain.
 
+The rest of the consent lifecycle follows from that:
+
+- **Opting in** on the web sets `sms_opt_in_at`; a trigger then sends the
+  registered opt-in confirmation text.
+- **Texting STOP** (or any registered opt-out keyword) reaches the verified
+  inbound webhook, which sets `sms_opt_out_at` on every profile with that
+  phone number — opt-out applies to a number, not an account.
+- **A recorded STOP is system-only.** A trigger rejects any change to
+  `sms_opt_out_at` from a signed-in user, admins included, so an opt-out
+  can't be undone from the browser. Only the server (service role) can
+  write it.
+
+Live testing turned up one undocumented gap: Twilio's `OptOutType` webhook
+field never arrived, so the function matches the registered opt-out keywords
+itself — the same whole-message, case-insensitive rule Twilio applies.
+
 ---
 
-## Gif
+## Project Structure
+
+```
+src/                      React app (one component per screen)
+public/                   Static pages served as plain HTML: about, privacy, SMS terms
+supabase/migrations/      Schema, RLS policies, triggers, and SQL functions — in order
+supabase/functions/       Edge Functions (account creation, email, SMS in and out)
+supabase/functions/_shared/  Single sources of truth: email, SMS, app URL
+```
+
+---
+
+## Demo 
 
 ![Paddy's Pastures demo](assets/paddyspasturesdemo.gif)
 
