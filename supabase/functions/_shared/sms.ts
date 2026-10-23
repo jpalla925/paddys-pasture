@@ -28,7 +28,7 @@ export type SendSmsResult =
   | { ok: false; error: string }
 
 const PREFIX = "Paddy's Pastures: "
-const OPT_OUT = ' Reply STOP to opt out.'
+const OPT_OUT = ' \n\nReply STOP to opt out.'
 
 // Phones are stored as 10 bare digits (ChangePassword.jsx enforces that).
 // Twilio wants E.164 (+1XXXXXXXXXX). The stored digits stay the source of
