@@ -9,18 +9,30 @@
 //
 // Callers pass a person (recipientId) and the middle of the message; this file
 // looks up their phone, checks consent, formats, sends, and logs.
+//
+// Exception: the opt-in confirmation's wording is fixed here (see
+// OPT_IN_CONFIRMATION), so callers send that kind with no text at all.
 
 import type { SupabaseClient } from 'jsr:@supabase/supabase-js@2'
 
 // Must match the check constraint on sms_log.kind.
 export type SmsKind = 'boarder_message' | 'opt_in_confirmation'
 
-interface SendSmsArgs {
-  recipientId: string        // profiles.id of the person to text
-  kind: SmsKind
-  text: string               // the middle of the message; prefix/suffix are added here
-  messageId?: string | null  // messages.id this text is about, if any
-}
+// A "discriminated union": which fields are allowed depends on `kind`.
+// TypeScript rejects text on an opt-in confirmation and requires it on a
+// boarder message, so the rule is checked before the code even deploys.
+type SendSmsArgs =
+  | {
+      recipientId: string        // profiles.id of the person to text
+      kind: 'boarder_message'
+      text: string               // the middle of the message; prefix/suffix are added here
+      messageId?: string | null  // messages.id this text is about, if any
+    }
+  | {
+      recipientId: string
+      kind: 'opt_in_confirmation'
+      messageId?: null
+    }
 
 export type SendSmsResult =
   | { ok: true; sid: string }
@@ -29,6 +41,15 @@ export type SendSmsResult =
 
 const PREFIX = "Paddy's Pastures: "
 const OPT_OUT = ' \n\nReply STOP to opt out.'
+
+// The opt-in confirmation registered with the A2P campaign, word for word,
+// minus the PREFIX (composeBody adds it). Must stay identical to the Opt-in
+// "Confirmation message" on the Messaging Service's Opt-out tab, so a person
+// gets the same text whether they opt in on the web or by texting START.
+// It already carries HELP and STOP language, so it gets no OPT_OUT suffix.
+const OPT_IN_CONFIRMATION =
+  "You're subscribed to barn notifications. Msg frequency varies. " +
+  'Msg & data rates may apply. Reply HELP for help, STOP to opt out.'
 
 // Phones are stored as 10 bare digits (ChangePassword.jsx enforces that).
 // Twilio wants E.164 (+1XXXXXXXXXX). The stored digits stay the source of
@@ -53,8 +74,13 @@ export function toGsmFriendly(s: string): string {
     .replace(/ /g, ' ')
 }
 
-export function composeBody(text: string): string {
-  return toGsmFriendly(PREFIX + text.trim() + OPT_OUT)
+// Every text gets PREFIX and opt-out language; only the source of the
+// opt-out language differs. Callers can't turn either off.
+export function composeBody(args: SendSmsArgs): string {
+  if (args.kind === 'opt_in_confirmation') {
+    return toGsmFriendly(PREFIX + OPT_IN_CONFIRMATION)
+  }
+  return toGsmFriendly(PREFIX + args.text.trim() + OPT_OUT)
 }
 
 // Missing secrets are a setup bug, so they throw (like email.ts).
@@ -74,8 +100,12 @@ function twilioConfig() {
 // number never stops a fan-out to the other recipients.
 export async function sendSms(
   admin: SupabaseClient,
-  { recipientId, kind, text, messageId = null }: SendSmsArgs,
+  args: SendSmsArgs,
 ): Promise<SendSmsResult> {
+  // Kept whole (not destructured) so composeBody() sees which kind it is;
+  // `text` only exists on some kinds.
+  const { recipientId, kind } = args
+  const messageId = args.messageId ?? null
   const cfg = twilioConfig()
 
   // 1. Consent check, from the database -- never from the caller.
@@ -117,7 +147,7 @@ export async function sendSms(
         body: new URLSearchParams({
           To: to,
           MessagingServiceSid: cfg.messagingServiceSid,
-          Body: composeBody(text),
+          Body: composeBody(args),
         }),
       },
     )

@@ -142,7 +142,7 @@ Deno.serve(async (req) => {
           recipientId,
           kind: 'boarder_message',
           messageId: msg.id,
-          text: `New message from ${boarderName}. \n\nView and reply: \n${appUrl(`/r/${token}`)}`,
+          text: `New message from ${boarderName}. \n0\nView and reply: \n${appUrl(`/r/${token}`)}`,
         })
 
         if (!sent.ok) {

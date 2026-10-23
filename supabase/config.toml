@@ -451,3 +451,15 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/notify-message/deno.json"
 entrypoint = "./functions/notify-message/index.ts"
+
+[functions.sms-inbound]
+enabled = true
+verify_jwt = false
+import_map = "./functions/sms-inbound/deno.json"
+entrypoint = "./functions/sms-inbound/index.ts"
+
+[functions.notify-sms-opt-in]
+enabled = true
+verify_jwt = false
+import_map = "./functions/notify-sms-opt-in/deno.json"
+entrypoint = "./functions/notify-sms-opt-in/index.ts"
