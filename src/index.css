@@ -610,3 +610,76 @@ input:focus, select:focus, textarea:focus {
   text-decoration: none;
 }
 .legal-footer a:hover { text-decoration: underline; }
+/* Install prompt (PWA) — header button, iPhone popover, and dashboard banner */
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.install-nav { position: relative; }
+.install-popover {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 20;
+  width: min(300px, calc(100vw - 32px));
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 8px 24px rgba(34, 48, 42, 0.12);
+}
+.install-popover .install-steps { margin-top: 0; }
+
+.install-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--saddle);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.install-banner-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+.install-banner-body { flex: 1; min-width: 0; }
+.install-banner-body > strong {
+  display: block;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--forest);
+  margin-bottom: 4px;
+}
+.install-banner-text {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+.install-steps {
+  margin: 4px 0 12px;
+  padding-left: 20px;
+}
+.install-steps li { margin-bottom: 4px; }
+.install-share-glyph {
+  vertical-align: -3px;
+  margin: 0 2px;
+  color: var(--forest);
+}
+.install-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .app-header { align-items: flex-start; gap: 12px; }
+  .app-header-actions { flex-direction: column; align-items: flex-end; }
+  .install-banner { padding: 14px 16px; gap: 12px; }
+  .install-banner-icon { width: 40px; height: 40px; border-radius: 10px; }
+}

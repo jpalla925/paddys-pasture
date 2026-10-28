@@ -12,6 +12,7 @@ import AddPersonForm from './AddPersonForm'
 import ChangePassword from './ChangePassword'
 import TreatmentChecklist from './TreatmentChecklist'
 import ReplyByLink from './ReplyByLink'
+import InstallPrompt from './Installprompt';
 
 function MainApp({ session, profile, refreshKey, setRefreshKey }) {
   const isAdmin = profile?.role === 'admin'
@@ -24,8 +25,13 @@ function MainApp({ session, profile, refreshKey, setRefreshKey }) {
           <h2>Paddy's Pastures</h2>
           <small className="text-muted">{profile?.full_name || session.user.email} — {profile?.role ?? '...'}</small>
         </div>
-        <button className="btn-secondary" onClick={() => supabase.auth.signOut()}>Sign out</button>
+        <div className="app-header-actions">
+          <InstallPrompt variant="nav" />
+          <button className="btn-secondary" onClick={() => supabase.auth.signOut()}>Sign out</button>
+        </div>
       </div>
+
+      <InstallPrompt variant="banner" />
 
       {(isAdmin || isStaff) ? (
         <>
