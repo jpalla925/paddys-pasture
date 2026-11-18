@@ -545,6 +545,25 @@ input:focus, select:focus, textarea:focus {
 .record-list .btn-link { flex: 1; text-align: left; }
 .record-date { font-size: 13px; white-space: nowrap; }
 .record-upload-btn { margin-top: 4px; }
+.record-upload-btn.is-disabled { opacity: 0.5; cursor: not-allowed; }
+.record-delete { flex: 0 0 auto; color: var(--error); font-size: 13px; }
+.coggins-upload { margin-bottom: 12px; }
+.coggins-upload input[type="date"] { max-width: 220px; }
+
+/* Coggins status badge (status is derived in the DB: coggins_status) */
+.coggins-badge {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+.coggins-badge--current { background: #e3efe7; color: var(--forest); }
+.coggins-badge--missing { background: #fdf1dc; color: #8a5a00; }
+.coggins-badge--expired { background: #fbe4e4; color: var(--error); }
 
 .photo-upload {
   display: flex;

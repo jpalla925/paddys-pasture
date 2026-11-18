@@ -12,7 +12,7 @@ import AddPersonForm from './AddPersonForm'
 import ChangePassword from './ChangePassword'
 import TreatmentChecklist from './TreatmentChecklist'
 import ReplyByLink from './ReplyByLink'
-import InstallPrompt from './Installprompt';
+import InstallPrompt from './InstallPrompt';
 
 function MainApp({ session, profile, refreshKey, setRefreshKey }) {
   const isAdmin = profile?.role === 'admin'
