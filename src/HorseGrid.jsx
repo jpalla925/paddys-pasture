@@ -2,18 +2,33 @@ import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import { Link } from 'react-router-dom'
 import DisplayField from './DisplayField'
-import MedicalRecords from './MedicalRecords'
+import MedicalRecords, { STATUS_LABEL } from './MedicalRecords'
+import {
+  HORSE_WITH_OWNER_SELECT, ownerName, formatPhone,
+  emergencyContactText, photoConsentText, cogginsText,
+} from './ownerDetails'
+
+// Gallery filters. "Coggins pending" means SUBMITTED horses with no Coggins on
+// file -- drafts haven't been handed to the barn yet. Status is derived in the
+// database (coggins_status, migration 161037).
+const FILTERS = {
+  all:     { label: 'All horses',      test: () => true },
+  pending: { label: 'Coggins pending', test: (h) => h.boarder_completed && h.coggins_status === 'missing' },
+  expired: { label: 'Coggins expired', test: (h) => h.coggins_status === 'expired' },
+  drafts:  { label: 'Not submitted',   test: (h) => !h.boarder_completed },
+}
 
 export default function HorseGrid({ refreshSignal, isAdmin }) {
   const [horses, setHorses] = useState([])
   const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState('all')
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState(null)
 
   async function loadHorses() {
     setLoading(true)
     const { data } = await supabase.from('horses')
-      .select('*, owner:profiles(full_name, email, phone)')
+      .select(HORSE_WITH_OWNER_SELECT)
       .order('name')
     setHorses(data ?? [])
     setLoading(false)
@@ -40,23 +55,34 @@ export default function HorseGrid({ refreshSignal, isAdmin }) {
   // ----- GALLERY -----
   const term = search.trim().toLowerCase()
   const visible = horses.filter((h) => {
+    if (!FILTERS[filter].test(h)) return false
     const owner = h.owner?.full_name || h.owner?.email || ''
     return h.name.toLowerCase().includes(term) || owner.toLowerCase().includes(term)
   })
+  const pendingCount = horses.filter(FILTERS.pending.test).length
 
   return (
     <div className="horse-gallery">
       <h3>All horses</h3>
-      <input placeholder="Search by horse or owner..." value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="search-input" />
+      <div className="horse-grid-controls">
+        <input placeholder="Search by horse or owner..." value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="search-input" />
+        <select value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filter horses">
+          {Object.entries(FILTERS).map(([key, f]) => (
+            <option key={key} value={key}>
+              {f.label}{key === 'pending' && pendingCount ? ` (${pendingCount})` : ''}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {visible.length === 0 ? (
         <p className="text-muted">No horses to show.</p>
       ) : (
         <div className="horse-grid">
           {visible.map((h) => {
-            const owner = h.owner?.full_name || h.owner?.email || 'Unassigned'
+            const owner = ownerName(h.owner)
             return (
               <div key={h.id} className="horse-tile" onClick={() => setSelectedId(h.id)} style={{ cursor: 'pointer' }}>
                 <div className="horse-tile-photo">
@@ -68,6 +94,12 @@ export default function HorseGrid({ refreshSignal, isAdmin }) {
                   <strong className="horse-tile-name">{h.name}</strong>
                   <div className="horse-tile-owner">({owner})</div>
                   {h.stall_number && <div className="horse-tile-meta">Stall {h.stall_number}</div>}
+                  <div className="horse-tile-meta">
+                    {!h.boarder_completed
+                      ? <span className="coggins-badge coggins-badge--draft">Not submitted</span>
+                      : h.coggins_status !== 'current' &&
+                        <span className={`coggins-badge coggins-badge--${h.coggins_status}`}>{STATUS_LABEL[h.coggins_status]}</span>}
+                  </div>
                   <Link to={`/horse/${h.id}/print`} className="no-print horse-tile-link"
                     onClick={(e) => e.stopPropagation()}>
                     Print sheet →
@@ -102,12 +134,12 @@ const BOARDER_FIELDS = [
   ['medications', 'Medications'],
   ['vet_info', 'Veterinarian info'],
   ['farrier_info', 'Farrier info'],
-  ['emergency_contacts', 'Emergency contacts'],
   ['behavior_notes', 'Behavior & handling notes'],
-  ['boarding_date', 'Boarding date'],
   ['intro_story', 'Short intro story'],
-  ['photo_permission', 'Photo permission'],
 ]
+// Not here on purpose: emergency contact and photo consent belong to the
+// owner's profile, so they're shown below but edited by the boarder under
+// "My account" (admins can also change them from the profiles table).
 
 function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
   const [editing, setEditing] = useState(false)
@@ -115,7 +147,7 @@ function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
 
-  const owner = horse.owner?.full_name || horse.owner?.email || 'Unassigned'
+  const owner = ownerName(horse.owner)
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
@@ -142,24 +174,13 @@ function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
   if (editing) {
     const renderField = ([field, labelText]) => (
       <div key={field}>
-        {field === 'photo_permission' ? (
-          <label className="field-label" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="checkbox" style={{ width: 'auto' }}
-              checked={!!form[field]}
-              onChange={(e) => update(field, e.target.checked)} />
-            {labelText}
-          </label>
+        <label className="field-label">{labelText}</label>
+        {field === 'boarding_date' ? (
+          <input type="date" value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
+        ) : field === 'behavior_notes' || field === 'intro_story' ? (
+          <textarea value={form[field] || ''} onChange={(e) => update(field, e.target.value)} rows={3} />
         ) : (
-          <>
-            <label className="field-label">{labelText}</label>
-            {field === 'boarding_date' || field === 'coggins_date' ? (
-              <input type="date" value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
-            ) : field === 'behavior_notes' || field === 'intro_story' ? (
-              <textarea value={form[field] || ''} onChange={(e) => update(field, e.target.value)} rows={3} />
-            ) : (
-              <input value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
-            )}
-          </>
+          <input value={form[field] || ''} onChange={(e) => update(field, e.target.value)} />
         )}
       </div>
     )
@@ -224,9 +245,14 @@ function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
         <DisplayField label="Medications" value={horse.medications} />
         <DisplayField label="Veterinarian info" value={horse.vet_info} />
         <DisplayField label="Farrier info" value={horse.farrier_info} />
-        <DisplayField label="Emergency contacts" value={horse.emergency_contacts} />
-        <DisplayField label="Owner phone" value={horse.owner?.phone} />
-        <DisplayField label="Photo permission" value={horse.photo_permission ? 'Yes' : 'No'} />
+      </div>
+
+      <h4 className="print-section-heading print-section-heading--spaced">Owner</h4>
+      <div className="print-grid">
+        <DisplayField label="Owner phone" value={formatPhone(horse.owner?.phone)} />
+        <DisplayField label="Emergency contact" value={emergencyContactText(horse.owner) || 'Not provided'} />
+        <DisplayField label="Photo sharing" value={photoConsentText(horse.owner)} />
+        <DisplayField label="Coggins" value={cogginsText(horse)} />
       </div>
 
       <div className="print-notes">
@@ -234,7 +260,7 @@ function HorseDetail({ horse, isAdmin, onBack, onSaved }) {
         <DisplayField label="Short intro story" value={horse.intro_story} />
       </div>
 
-      <MedicalRecords horse={horse} userId={horse.owner_id} canUpload={false} />
+      <MedicalRecords horse={horse} role={isAdmin ? 'admin' : 'staff'} onChanged={onSaved} />
 
     </div>
   )

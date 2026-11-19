@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import { supabase } from './supabaseClient'
 import { SMS_CONSENT_VERSION } from './smsConsent'
+import ProfileDetailsFields, {
+  EMPTY_PROFILE_DETAILS,
+  validateProfileDetails,
+  profileDetailsToColumns,
+} from './ProfileDetailsFields'
 
 export default function ChangePassword({ userId, role, onDone }) {
   const [firstName, setFirstName] = useState('')
@@ -16,6 +21,11 @@ export default function ChangePassword({ userId, role, onDone }) {
   const [zelleAccount, setZelleAccount] = useState('')
   const [otherHeardAbout, setOtherHeardAbout] = useState('')
   const [smsOptIn, setSmsOptIn] = useState(false)
+  const [details, setDetails] = useState(EMPTY_PROFILE_DETAILS)   // boarders only
+  const isBoarder = role === 'boarder'
+  // Set once the password step succeeds, so a retry after a failed profile
+  // save doesn't re-send the same password (Supabase rejects an unchanged one).
+  const [passwordDone, setPasswordDone] = useState(false)
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -43,9 +53,30 @@ export default function ChangePassword({ userId, role, onDone }) {
       return
     }
 
+    if (isBoarder) {
+      const problem = validateProfileDetails(details)
+      if (problem) { setMessage(problem); return }
+    }
+
     setSaving(true)
 
-    // 0. Save profile details (name, phone, address if provided)
+    // 1. Change the login password FIRST. If this fails (e.g. too weak, or the
+    //    same as the temporary one), nothing else is saved and
+    //    must_change_password stays true, so the boarder simply tries again.
+    //    (Previously the flag was cleared first, so a failed password change
+    //    left them on the temporary password with setup skipped next time.)
+    if (!passwordDone) {
+      const { error: pwError } = await supabase.auth.updateUser({ password })
+      if (pwError) {
+        setMessage('Error: ' + pwError.message)
+        setSaving(false)
+        return
+      }
+      setPasswordDone(true)
+    }
+
+    // 2. Then save profile details and clear the flag. If this step fails, the
+    //    flag is still true, so setup shows again and nothing is half-done.
     const { error: profileError } = await supabase
       .from('profiles')
       .update({ 
@@ -58,19 +89,13 @@ export default function ChangePassword({ userId, role, onDone }) {
         zelle_account: paymentPref === 'Zelle' ? (zelleAccount.trim() || null) : null,
         sms_opt_in_at: smsOptIn ? new Date().toISOString() : null,
         sms_consent_version: smsOptIn ? SMS_CONSENT_VERSION : null,
+        ...(isBoarder ? profileDetailsToColumns(details) : {}),
         must_change_password: false
       })
     .eq('id', userId)
     if (profileError) {
-      setMessage('Error saving profile: ' + profileError.message)
-      setSaving(false)
-      return
-    }
-
-    // 1. Update the actual login password
-    const { error: pwError } = await supabase.auth.updateUser({ password })
-    if (pwError) {
-      setMessage('Error: ' + pwError.message)
+      setMessage('Your new password is saved, but your details could not be saved: ' +
+        profileError.message + ' Please press Complete Setup again.')
       setSaving(false)
       return
     }
@@ -116,8 +141,10 @@ export default function ChangePassword({ userId, role, onDone }) {
           onChange={(e) => setAddress(e.target.value)} 
           autoComplete="street-address" />
 
-        {role === 'boarder' && (
+        {isBoarder && (
           <>
+            <ProfileDetailsFields value={details} onChange={setDetails} disabled={saving} />
+
             <label className="field-label">How did you hear about Paddy's Pastures?</label>
             <select value={heardAbout} onChange={(e) => setHeardAbout(e.target.value)}>
               <option value="">Select...</option>

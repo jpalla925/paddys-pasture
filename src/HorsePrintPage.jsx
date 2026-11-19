@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from './supabaseClient'
+import {
+  HORSE_WITH_OWNER_SELECT, ownerName, formatPhone,
+  emergencyContactText, photoConsentText, cogginsText,
+} from './ownerDetails'
 
 // Moved OUT of the component below — defined once, stable identity
 function Field({ label, value }) {
@@ -20,7 +24,7 @@ export default function HorsePrintPage() {
 
   useEffect(() => {
     supabase.from('horses')
-      .select('*, owner:profiles(full_name, email, phone)')
+      .select(HORSE_WITH_OWNER_SELECT)
       .eq('id', horseId)
       .single()
       .then(({ data }) => { setHorse(data); setLoading(false) })
@@ -29,7 +33,7 @@ export default function HorsePrintPage() {
   if (loading) return <p className="page-loading">Loading...</p>
   if (!horse) return <p className="page-loading">Horse not found.</p>
 
-  const owner = horse.owner?.full_name || horse.owner?.email || 'Unassigned'
+  const owner = ownerName(horse.owner)
 
   return (
     <div className="print-page print-sheet">
@@ -78,7 +82,15 @@ export default function HorsePrintPage() {
         <Field label="Medications" value={horse.medications} />
         <Field label="Veterinarian" value={horse.vet_info} />
         <Field label="Farrier" value={horse.farrier_info} />
-        <Field label="Emergency contacts" value={horse.emergency_contacts} />
+      </div>
+
+      <h3 className="print-section-heading print-section-heading--spaced">Owner &amp; emergency</h3>
+      <div className="print-grid">
+        <Field label="Owner" value={owner} />
+        <Field label="Owner phone" value={formatPhone(horse.owner?.phone)} />
+        <Field label="Emergency contact" value={emergencyContactText(horse.owner) || 'Not provided'} />
+        <Field label="Coggins" value={cogginsText(horse)} />
+        <Field label="Photo sharing" value={photoConsentText(horse.owner)} />
       </div>
 
       <div className="print-notes">

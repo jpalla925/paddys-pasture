@@ -13,10 +13,24 @@ import ChangePassword from './ChangePassword'
 import TreatmentChecklist from './TreatmentChecklist'
 import ReplyByLink from './ReplyByLink'
 import InstallPrompt from './InstallPrompt';
+import AccountDetails from './AccountDetails'
+
+// What RequireAuth needs to decide which onboarding step (if any) to show.
+const PROFILE_SELECT = 'full_name, role, must_change_password, emergency_contact_phone, photo_permission'
+
+// Boarders need an emergency contact and a photo answer before anything else.
+// (Horses can't be submitted without them either -- enforced in the database,
+// migration 161036. This just gets them filled in up front.)
+function needsProfileDetails(profile) {
+  return profile?.role === 'boarder' &&
+    (!profile.emergency_contact_phone || profile.photo_permission === null || profile.photo_permission === undefined)
+}
 
 function MainApp({ session, profile, refreshKey, setRefreshKey }) {
   const isAdmin = profile?.role === 'admin'
   const isStaff = profile?.role === 'staff'
+  const isBoarder = profile?.role === 'boarder'
+  const [showAccount, setShowAccount] = useState(false)
 
   return (
     <div className="container">
@@ -27,11 +41,21 @@ function MainApp({ session, profile, refreshKey, setRefreshKey }) {
         </div>
         <div className="app-header-actions">
           <InstallPrompt variant="nav" />
+          {isBoarder && (
+            <button className="btn-secondary" onClick={() => setShowAccount((v) => !v)}>
+              {showAccount ? 'Close account' : 'My account'}
+            </button>
+          )}
           <button className="btn-secondary" onClick={() => supabase.auth.signOut()}>Sign out</button>
         </div>
       </div>
 
       <InstallPrompt variant="banner" />
+
+      {isBoarder && showAccount && (
+        <AccountDetails userId={session.user.id} mode="account"
+          onDone={() => setShowAccount(false)} onCancel={() => setShowAccount(false)} />
+      )}
 
       {(isAdmin || isStaff) ? (
         <>
@@ -58,7 +82,9 @@ function MainApp({ session, profile, refreshKey, setRefreshKey }) {
 function RequireAuth({ children }) {
   const [session, setSession] = useState(null)
   const [profile, setProfile] = useState(null)
+  const [profileError, setProfileError] = useState('')
   const [loading, setLoading] = useState(true)
+  const [profileVersion, setProfileVersion] = useState(0)   // bump to re-read the profile
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -72,13 +98,23 @@ function RequireAuth({ children }) {
   useEffect(() => {
     if (!session) { setProfile(null); return }
     let active = true
-    supabase.from('profiles').select('full_name, role, must_change_password').eq('id', session.user.id).single()
-      .then(({ data }) => { if (active) setProfile(data) })
+    supabase.from('profiles').select(PROFILE_SELECT).eq('id', session.user.id).single()
+      .then(({ data, error }) => {
+        if (!active) return
+        if (error) setProfileError('Could not load your account: ' + error.message)
+        else { setProfile(data); setProfileError('') }
+      })
     return () => { active = false }
-  }, [session])
+  }, [session, profileVersion])
+
+  const reloadProfile = () => setProfileVersion((v) => v + 1)
 
   if (loading) return <p className="page-loading">Loading...</p>
   if (!session) return <Auth />
+  if (profileError) return <p className="page-loading">{profileError}</p>
+  // Wait for the profile: without it we can't tell which steps are needed
+  // (and an admin would briefly see the boarder view).
+  if (!profile) return <p className="page-loading">Loading...</p>
 
   // Force temp-password users to set a real one before anything else
   if (profile?.must_change_password) {
@@ -86,9 +122,15 @@ function RequireAuth({ children }) {
       <ChangePassword
         userId={session.user.id}
         role={profile?.role}
-        onDone={() => setProfile((p) => ({ ...p, must_change_password: false }))}
+        onDone={reloadProfile}
       />
     )
+  }
+
+  // Boarders who finished setup before the emergency contact and photo
+  // question existed get a one-time catch-up step.
+  if (needsProfileDetails(profile)) {
+    return <AccountDetails userId={session.user.id} mode="onboarding" onDone={reloadProfile} />
   }
 
   return children({ session, profile })
