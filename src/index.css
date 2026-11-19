@@ -573,6 +573,12 @@ input:focus, select:focus, textarea:focus {
 .coggins-badge--current { background: #e3efe7; color: var(--forest); }
 .coggins-badge--missing { background: #fdf1dc; color: #8a5a00; }
 .coggins-badge--expired { background: #fbe4e4; color: var(--error); }
+.coggins-badge--draft   { background: #ececec; color: #555; }
+.horse-tile-meta .coggins-badge { margin-left: 0; }
+
+.horse-grid-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.horse-grid-controls .search-input { flex: 1 1 220px; }
+.horse-grid-controls select { flex: 0 0 auto; width: auto; }
 
 .photo-upload {
   display: flex;
