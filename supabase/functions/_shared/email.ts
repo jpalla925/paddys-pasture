@@ -4,7 +4,7 @@
 // send through here, so the from address, reply-to, and the Resend call
 // itself all live in exactly one place.
 
-const FROM = 'Paddy\'s Pastures <noreply@paddyspastures.com>'
+const FROM = 'Paddy\'s Gate <noreply@paddyspastures.com>'
 const REPLY_TO = 'Howdy@paddyspastures.com'
 
 interface SendEmailArgs {

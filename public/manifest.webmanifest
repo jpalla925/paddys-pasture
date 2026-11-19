@@ -1,7 +1,7 @@
 {
   "name": "Paddy's Gate",
   "short_name": "Paddy's Gate",
-  "description": "Boarder portal for Paddy's Pastures",
+  "description": "Paddy's Gate, the boarder portal for Paddy's Pastures",
   "id": "/",
   "start_url": "/",
   "scope": "/",

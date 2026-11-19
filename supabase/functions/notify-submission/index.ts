@@ -86,7 +86,7 @@ Deno.serve(async (req) => {
         </p>
         <p>It's now waiting in the <em>new boarded horses</em> queue for the
         barn-side details (stall, hay, grain, pasture, turnout).</p>
-        <p><a href="${appUrl()}" style="color: #2F4A3D;">Open Paddy's Pastures</a></p>
+        <p><a href="${appUrl()}" style="color: #2F4A3D;">Open Paddy's Gate</a></p>
       </div>
     `
 

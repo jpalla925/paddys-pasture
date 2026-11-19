@@ -36,7 +36,7 @@ function MainApp({ session, profile, refreshKey, setRefreshKey }) {
     <div className="container">
       <div className="app-header">
         <div>
-          <h2>Paddy's Pastures</h2>
+          <h2>Paddy's Gate</h2>
           <small className="text-muted">{profile?.full_name || session.user.email} — {profile?.role ?? '...'}</small>
         </div>
         <div className="app-header-actions">

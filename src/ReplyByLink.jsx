@@ -82,7 +82,7 @@ export default function ReplyByLink() {
     return (
       <div className="container">
         <div className="card form-narrow">
-          <h3>Paddy's Pastures</h3>
+          <h3>Paddy's Gate</h3>
           <p>This link is invalid or has expired.</p>
           <p className="text-muted">
             Reply in the app, or call the barn at <a href={`tel:${BARN_PHONE.replace(/\D/g, '')}`}>{BARN_PHONE}</a>.
@@ -98,7 +98,7 @@ export default function ReplyByLink() {
   return (
     <div className="container">
       <div className="chat-panel">
-        <h3>Paddy's Pastures</h3>
+        <h3>Paddy's Gate</h3>
         <p className="text-muted">
           {recipient_first_name ? `Hi ${recipient_first_name}. ` : ''}
           Conversation with <strong>{boarderName}</strong>

@@ -20,7 +20,7 @@ export default function Auth() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h2>Paddy's Pastures</h2>
+        <h2>Paddy's Gate</h2>
         <form onSubmit={handleSubmit}>
           <input type="email" placeholder="Email" value={email}
             onChange={(e) => setEmail(e.target.value)} required />

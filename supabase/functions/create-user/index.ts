@@ -63,17 +63,43 @@ Deno.serve(async (req) => {
     }
     
     const loginUrl = appUrl()
+    // Boarders get the horse + Coggins heads-up; everyone gets install steps.
+    const boarderNote = role === 'boarder'
+      ? `<p>When you first log in, you'll set your own password, add an emergency contact,
+         and answer a quick photo-sharing question. Then you'll add your horse's information.
+         <strong>Have your horse's Coggins handy</strong> (a photo or PDF is fine), or you can
+         choose to give it to the barn instead.</p>`
+      : `<p>When you first log in, you'll set your own password and fill in your details.</p>`
+
     const emailHtml = `
       <div style="font-family: sans-serif; color: #22302a; max-width: 500px;">
-        <h2 style="color: #2F4A3D;">Welcome to Paddy's Pastures</h2>
-        <p>An account has been created for you at Paddy's Pastures. Here's how to get started:</p>
+        <h2 style="color: #2F4A3D;">Welcome to Paddy's Gate</h2>
+        <p>An account has been created for you on Paddy's Gate, the Paddy's Pastures
+        barn app. Here's how to get started:</p>
         <p>
           <strong>Login page:</strong> <a href="${loginUrl}" style="color: #2F4A3D;">${loginUrl}</a><br/>
           <strong>Your email:</strong> ${email}<br/>
           <strong>Temporary password:</strong> ${password}
         </p>
-        <p>When you first log in, you'll set your own password and fill in your details.
-        If you're a boarder, you'll also add your horse's information.</p>
+        ${boarderNote}
+
+        <h3 style="color: #2F4A3D; margin-bottom: 4px;">Put Paddy's Gate on your home screen</h3>
+        <p style="margin-top: 0;">It opens like an app, with no app store needed.</p>
+
+        <p style="margin-bottom: 4px;"><strong>iPhone</strong></p>
+        <ol style="margin-top: 0;">
+          <li>Open the login link above <strong>in Safari</strong> (other browsers won't show the option).</li>
+          <li>Tap the <strong>Share</strong> button (the square with an arrow pointing up).</li>
+          <li>Scroll down and tap <strong>Add to Home Screen</strong>, then tap <strong>Add</strong>.</li>
+        </ol>
+
+        <p style="margin-bottom: 4px;"><strong>Android</strong></p>
+        <ol style="margin-top: 0;">
+          <li>Open the login link above in <strong>Chrome</strong>.</li>
+          <li>Tap the <strong>menu</strong> (three dots, top right).</li>
+          <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>, then confirm.</li>
+        </ol>
+
         <p>See you at the barn!</p>
       </div>
     `
@@ -81,7 +107,7 @@ Deno.serve(async (req) => {
     try {
       await sendEmail({
         to: email,
-        subject: 'Welcome to Paddy\'s Pastures — your login details',
+        subject: 'Welcome to Paddy\'s Gate — your login details',
         html: emailHtml,
       })
     } catch (mailErr) {
